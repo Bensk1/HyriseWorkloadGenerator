@@ -1,0 +1,42 @@
+[
+    {
+        "name": "customer",
+        "rows": 10000,
+        "columns": 180,
+        "stringsForEachInt": 9,
+        "stringLength": [6, 8],
+        "uniqueValues": 10000
+    },
+    {
+        "name": "order",
+        "rows": 1000000,
+        "columns": 10,
+        "stringsForEachInt": 9,
+        "stringLength": [6, 8],
+        "uniqueValues": [1000000, 10, 100, 1000, 10000, 10, 100, 1000, 10000, 1000]
+    },
+    {
+        "name": "supplier",
+        "rows": 10000,
+        "columns": 20,
+        "stringsForEachInt": 3,
+        "stringLength": [6, 8],
+        "uniqueValues": 10000
+    },
+    {
+        "name": "item",
+        "rows": 1000000,
+        "columns": 10,
+        "stringsForEachInt": 9,
+        "stringLength": [6, 8],
+        "uniqueValues": [1000000, 100000, 10000, 1000, 100, 10, 100, 1000, 10000, 10000]
+    },
+    {
+        "name": "invoice",
+        "rows": 100000,
+        "columns": 40,
+        "stringsForEachInt": 5,
+        "stringLength": [6, 8],
+        "uniqueValues": 10000
+    }
+]
