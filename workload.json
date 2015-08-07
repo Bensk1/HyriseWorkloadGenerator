@@ -1,6 +1,7 @@
 {
     "days": 10,
     "queriesPerDay": 100,
+    "verbose": true,
     "queryClasses": [
         {
             "description": "test"

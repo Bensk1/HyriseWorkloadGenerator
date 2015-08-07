@@ -12,15 +12,18 @@ class Object:
 
 class Workload(Object):
 
-    def __init__(self, days, queriesPerDay, queryClasses, queryClassDistributions):
+    def __init__(self, days, queriesPerDay, queryClasses, queryClassDistributions, verbose):
         self.days = days
         self.currentDay = 1
         self.queriesPerDay = queriesPerDay
         self.queryClasses = self.parseQueryClasses(queryClasses)
         self.queryClassDistributions = self.parseQueryClassDistributions(queryClassDistributions)
+        self.verbose = verbose
         self.currentlyActiveQueryDistribution = None
         self.currentQueryOrder = None
         self.activeQueryClassDistributionChanged = False
+        self.currentQueryBatchOrder = None
+        self.batches = self.queriesPerDay / (QUERY_DIVISOR / DISTRIBUTION_DIVISOR)
 
     def parseQueryClasses(self, queryClasses):
         queryClassesParsed = []
@@ -60,11 +63,11 @@ class Workload(Object):
 
         self.activeQueryClassDistributionChanged = False
 
-        queryBatchOrder = map(lambda x: x / DISTRIBUTION_DIVISOR, self.currentlyActiveQueryDistribution.distribution)
+        self.currentQueryBatchOrder = map(lambda x: x / DISTRIBUTION_DIVISOR, self.currentlyActiveQueryDistribution.distribution)
         self.currentQueryOrder = []
 
-        for queryBatch in range(0, self.queriesPerDay / (QUERY_DIVISOR / DISTRIBUTION_DIVISOR)):
-            for numberOfQueries, queryClass in zip(queryBatchOrder, self.queryClasses):
+        for queryBatch in range(0, self.batches):
+            for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
                 self.currentQueryOrder.extend([queryClass] * numberOfQueries)
 
 
@@ -74,6 +77,10 @@ class Workload(Object):
             self.determineQueryOrder()
 
             print "########## Day %i ##########" % (self.currentDay)
+            if self.verbose:
+                print "Sending %i queries in %i batches a %i queries" % (self.queriesPerDay, self.batches, QUERY_DIVISOR / DISTRIBUTION_DIVISOR)
+                for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
+                    print "%i queries of type %s" % (numberOfQueries, queryClass.description)
 
             for query in self.currentQueryOrder:
                 query.execute()
@@ -88,5 +95,5 @@ else:
     with open(sys.argv[1]) as workloadFile:
             workloadConfig = json.load(workloadFile)
 
-    w = Workload(workloadConfig['days'], workloadConfig['queriesPerDay'], workloadConfig['queryClasses'], workloadConfig['queryClassDistributions'])
+    w = Workload(workloadConfig['days'], workloadConfig['queriesPerDay'], workloadConfig['queryClasses'], workloadConfig['queryClassDistributions'], workloadConfig['verbose'])
     w.run()
