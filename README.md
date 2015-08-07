@@ -1,6 +1,19 @@
 # HyriseWorkloadGenerator
 A workload generator for hyrise
 
+### Workload Generator
+only numbers divisible by 5 for distributions
+only numbers divisible by 100 for queries
+
+
+QueryClass
+- selectivity (values that are in the result set)
+- periodic?
+- description
+
+ToDo:
+random query class which occurs randomly (boundaries) and selects randomly
+
 ### Table Generator
 The table generator generates tables in a hyrise-suitable format. The specifications of the tables to generate have to be provided as a configuration file. The specifications are defined in json format. An example is given in the config.json file in the tableGenerator directory.
 

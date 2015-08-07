@@ -1,0 +1,27 @@
+{
+    "days": 10,
+    "queriesPerDay": 100,
+    "queryClasses": [
+        {
+            "description": "test"
+        },
+        {
+            "description": "test2"
+        },
+        {
+            "description": "test3"
+        }
+    ],
+    "queryClassDistributions": [
+        {
+            "description": "Initial Distribution",
+            "validFromDay": 1,
+            "distribution": [0.5, 0.25, 0.25]
+        },
+        {
+            "description": "New BI Software",
+            "validFromDay": 6,
+            "distribution": [0.2, 0.4, 0.4]
+        }
+    ]
+}
