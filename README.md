@@ -15,3 +15,5 @@ A configuration consists of the following attributes, all of them are mandatory:
 
 **Usage**:
 python generator.py config.json outputDirectory
+
+#### If you want to generate large tables the use of pypy will speed up the process significantly.
