@@ -1,4 +1,5 @@
 import linecache
+import os
 from subprocess import Popen, PIPE
 from jinja2 import Template
 from column import Column
@@ -12,8 +13,14 @@ class QueryClass:
         self.values = values
         self.tableDirectory = tableDirectory
         self.datatypes = []
+
+        self.checkAndCreateQueryFolder()
         self.queryJson = self.createQueryJson()
         self.writeQueryFile()
+
+    def checkAndCreateQueryFolder(self):
+        if not os.path.exists("queries"):
+            os.makedirs("queries")
 
     def createQueryJson(self):
         self.determineDatatypes()
