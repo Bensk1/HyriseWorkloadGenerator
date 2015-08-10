@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import sys
 import json
 from queryClass import QueryClass
@@ -78,7 +80,7 @@ class Workload(Object):
 
             print "########## Day %i ##########" % (self.currentDay)
             if self.verbose:
-                print "Sending %i queries in %i batches a %i queries" % (self.queriesPerDay, self.batches, QUERY_DIVISOR / DISTRIBUTION_DIVISOR)
+                print "Sending %i queries in %i batches à %i queries" % (self.queriesPerDay, self.batches, QUERY_DIVISOR / DISTRIBUTION_DIVISOR)
                 for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
                     print "%i queries of type %s" % (numberOfQueries, queryClass.description)
 
