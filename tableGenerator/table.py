@@ -1,6 +1,7 @@
 from random import randint
 from random import choice
 import string
+import os
 
 class Table:
 
@@ -13,7 +14,12 @@ class Table:
         self.maxStringLength = stringLength[1]
         self.uniqueValues = self.normalizeUniqueValues(uniqueValues, self.columns)
 
+        self.checkAndCreatePath(path)
         self.outputFile = open("%s/%s.tbl" % (path, self.name), "w")
+
+    def checkAndCreatePath(self, path):
+        if not os.path.exists(path):
+            os.makedirs(path)
 
     def normalizeUniqueValues(self, uniqueValues, columns):
         if isinstance(uniqueValues, list):
