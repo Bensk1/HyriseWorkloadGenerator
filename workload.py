@@ -4,6 +4,8 @@ import sys
 import json
 import types
 import copy_reg
+import requests
+import glob
 from multiprocessing import Pool
 from queryClass import QueryClass
 from queryClassDistribution import QueryClassDistribution
@@ -29,7 +31,8 @@ class Workload(Object):
         self.days = days
         self.currentDay = 1
         self.queriesPerDay = queriesPerDay
-        self.queryClasses = self.parseQueryClasses(queryClasses, tableDirectory)
+        self.tableDirectory = tableDirectory
+        self.queryClasses = self.parseQueryClasses(queryClasses, self.tableDirectory)
         self.queryClassDistributions = self.parseQueryClassDistributions(queryClassDistributions)
         self.verbose = verbose
         self.currentlyActiveQueryDistribution = None
@@ -37,7 +40,52 @@ class Workload(Object):
         self.activeQueryClassDistributionChanged = False
         self.currentQueryBatchOrder = None
         self.batches = self.queriesPerDay / (QUERY_DIVISOR / DISTRIBUTION_DIVISOR)
+
+        self.loadAllTables()
+
         self.threadPool = Pool(len(self.queryClasses))
+
+    def getTableNames(self):
+        tableNames = []
+        filenames = glob.glob("%s/*.tbl" % (self.tableDirectory))
+
+        for filename in filenames:
+            filename = filename.split(".tbl")[0]
+            tableNames.append(filename.split('/')[-1])
+
+        return tableNames
+
+    def buildAndSendRequests(self, tableName):
+        loadTableRequest = self.buildLoadTableRequest(tableName)
+        r = requests.post("http://localhost:5000/jsonQuery", data = loadTableRequest)
+
+    def loadAllTables(self):
+        tableNames = self.getTableNames()
+
+        threadPool = Pool(len(tableNames))
+        threadPool.map(self.buildAndSendRequests, tableNames)
+        threadPool.close()
+        threadPool.join()
+
+        print "Succesfully loaded %i tables" % (len(tableNames))
+
+    def buildLoadTableRequest(self, table):
+        loadTableRequest = {'query': '{\
+            "operators": {\
+                "loadTable": {\
+                    "type" : "GetTable",\
+                    "name" : "%s"\
+                },\
+                "NoOp": {\
+                    "type" : "NoOp"\
+                }\
+            },\
+            "edges" : [\
+                ["loadTable", "NoOp"]\
+            ]\
+        }' % (table)}
+
+        return loadTableRequest
 
     def parseQueryClasses(self, queryClasses, tableDirectory):
         queryClassesParsed = []
