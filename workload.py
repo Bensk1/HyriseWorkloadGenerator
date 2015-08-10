@@ -60,6 +60,8 @@ class Workload(Object):
         r = requests.post("http://localhost:5000/jsonQuery", data = loadTableRequest)
 
     def loadAllTables(self):
+        print "Load all tables in directory: %s" % (self.tableDirectory)
+
         tableNames = self.getTableNames()
 
         threadPool = Pool(len(tableNames))

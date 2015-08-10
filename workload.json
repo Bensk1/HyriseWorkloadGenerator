@@ -7,19 +7,19 @@
             "description": "test",
             "table": "customer",
             "columns": [1, 0],
-            "values": ["G9jqgMyr", 672256]
+            "values": ["VRPUH95L", 675075]
         },
         {
             "description": "test2",
             "table": "customer",
             "columns": [0],
-            "values": [676391]
+            "values": [672525]
         },
         {
             "description": "test3",
             "table": "customer",
             "columns": [10],
-            "values": [321640]
+            "values": [329078]
         }
     ],
     "queryClassDistributions": [
