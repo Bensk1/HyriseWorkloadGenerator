@@ -1,16 +1,25 @@
 {
     "days": 10,
     "queriesPerDay": 100,
-    "verbose": true,
+    "verbose": false,
     "queryClasses": [
         {
-            "description": "test"
+            "description": "test",
+            "table": "customer",
+            "columns": [1],
+            "values": [1]
         },
         {
-            "description": "test2"
+            "description": "test2",
+            "table": "customer",
+            "columns": [0],
+            "values": [1]
         },
         {
-            "description": "test3"
+            "description": "test3",
+            "table": "customer",
+            "columns": [0],
+            "values": [1]
         }
     ],
     "queryClassDistributions": [
