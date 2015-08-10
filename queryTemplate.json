@@ -1,0 +1,35 @@
+query={
+  "operators": {
+    "scan": {
+      "table": "{{table}}",
+      "type": "SimpleTableScan",
+      "predicates": [
+      {% for column in range(columnLen - 1) -%}
+        {
+          "type": "AND"
+        },
+      {%- endfor %}
+      {% for column in columns -%}
+        {
+          "type": "EQ_V",
+          "value": {% if column.datatype == 2 %}"{% endif %}{{column.value}}{% if column.datatype == 2 %}"{% endif %},
+          "f": {{column.column}},
+          "vtype": {{column.datatype}},
+          "in": 0
+        }{% if column.last == False %},{% endif %}
+      {%- endfor %}
+      ],
+      "ofDelta": false
+    },
+    "get": {
+      "type": "GetTable",
+      "name": "{{table}}"
+    }
+  },
+  "edges": [
+    [
+      "get",
+      "scan"
+    ]
+  ]
+}

@@ -6,20 +6,20 @@
         {
             "description": "test",
             "table": "customer",
-            "columns": [1],
-            "values": [1]
+            "columns": [1, 0],
+            "values": ["G9jqgMyr", 672256]
         },
         {
             "description": "test2",
             "table": "customer",
             "columns": [0],
-            "values": [1]
+            "values": [676391]
         },
         {
             "description": "test3",
             "table": "customer",
-            "columns": [0],
-            "values": [1]
+            "columns": [10],
+            "values": [321640]
         }
     ],
     "queryClassDistributions": [
