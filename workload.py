@@ -169,8 +169,10 @@ class Workload(Object):
 
             self.currentDay += 1
 
-        # for queryClass in self.queryClasses:
-        #     queryClass.showStatistics()
+        performanceStatistics = {}
+        for queryClass in self.queryClasses:
+            performanceStatistics[queryClass.description] = queryClass.statistics
+        print "Workload performance: %s" % (performanceStatistics)
 
         print "Workload statistics: %s" % (self.statistics)
 
