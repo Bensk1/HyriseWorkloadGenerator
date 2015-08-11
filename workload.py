@@ -149,13 +149,16 @@ class Workload(Object):
             self.threadPoolResults = []
 
             for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
-                self.threadPoolResults.append(self.threadPool.apply_async(queryClass.execute, [self.batches, numberOfQueries]))
+                self.threadPoolResults.append(self.threadPool.apply_async(queryClass.execute, [self.batches, numberOfQueries], callback = queryClass.addStatistic))
 
 
             for threadPoolResult in self.threadPoolResults:
                 threadPoolResult.wait()
 
             self.currentDay += 1
+
+        # for queryClass in self.queryClasses:
+        #     queryClass.showStatistics()
 
 if len(sys.argv) <> 3:
     print "Usage: python generator.py workload.json tableDirectory"

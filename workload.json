@@ -1,5 +1,5 @@
 {
-    "days": 10,
+    "days": 7,
     "queriesPerDay": 100,
     "verbose": false,
     "queryClasses": [
@@ -11,9 +11,9 @@
         },
         {
             "description": "test2",
-            "table": "customer",
+            "table": "order",
             "columns": [0],
-            "values": [672525]
+            "values": [1052757]
         },
         {
             "description": "test3",

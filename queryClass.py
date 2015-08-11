@@ -1,5 +1,6 @@
 import linecache
 import os
+import re
 from subprocess import Popen, PIPE
 from jinja2 import Template
 from column import Column
@@ -13,10 +14,17 @@ class QueryClass:
         self.values = values
         self.tableDirectory = tableDirectory
         self.datatypes = []
+        self.statistics = []
 
         self.checkAndCreateQueryFolder()
         self.queryJson = self.createQueryJson()
         self.writeQueryFile()
+
+    def showStatistics(self):
+        print "%s: %s" % (self.description, self.statistics)
+
+    def addStatistic(self, value):
+        self.statistics.append(value)
 
     def checkAndCreateQueryFolder(self):
         if not os.path.exists("queries"):
@@ -52,7 +60,15 @@ class QueryClass:
             self.datatypes.append(datatypes.split('|')[column])
 
     def execute(self, batches, concurrencyLevel):
-        a = Popen(["ab -k -n %i -c %i -r -T \"application/x-www-form-urlencoded\" -p \"%s\" 127.0.0.1:5000/jsonQuery/" % (batches * concurrencyLevel, concurrencyLevel, self.queryFilePath)], shell = True, stdout = PIPE)
-        (output, err) = a.communicate()
-        # print output
-        exit_code = a.wait()
+        requests = batches * concurrencyLevel
+
+        ab = Popen(["ab -q -k -n %i -c %i -r -T \"application/x-www-form-urlencoded\" -p \"%s\" 127.0.0.1:5000/jsonQuery/" % (requests, concurrencyLevel, self.queryFilePath)], shell = True, stdout = PIPE)
+        (output, err) = ab.communicate()
+        ab.wait()
+        timeTakenString = output.split('\n')[15]
+        timeTaken = float(re.findall("\d+.\d+", timeTakenString)[0])
+        timeTakenInMs = timeTaken / requests * 1000
+
+        print "%s: %s (%fms per request)" % (self.description, timeTaken, timeTakenInMs)
+
+        return timeTakenInMs
