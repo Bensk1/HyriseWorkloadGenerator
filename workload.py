@@ -45,6 +45,8 @@ class Workload(Object):
 
         self.threadPool = Pool(len(self.queryClasses))
 
+        self.statistics = []
+
     def getTableNames(self):
         tableNames = []
         filenames = glob.glob("%s/*.tbl" % (self.tableDirectory))
@@ -146,6 +148,11 @@ class Workload(Object):
                 for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
                     print "%i queries of type %s" % (numberOfQueries, queryClass.description)
 
+            day = []
+            for numberOfQueries in self.currentQueryBatchOrder:
+                day.append(numberOfQueries * self.batches)
+            self.statistics.append(day)
+
             self.threadPoolResults = []
 
             for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
@@ -159,6 +166,8 @@ class Workload(Object):
 
         # for queryClass in self.queryClasses:
         #     queryClass.showStatistics()
+
+        print "Workload statistics: %s" % (self.statistics)
 
 if len(sys.argv) <> 3:
     print "Usage: python generator.py workload.json tableDirectory"
