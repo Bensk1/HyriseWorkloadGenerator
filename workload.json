@@ -19,7 +19,7 @@
             "description": "Customer engagement",
             "table": "customer",
             "columns": [10],
-            "values": [329078]
+            "values": "auto"
         },
         {
             "description": "Software test",

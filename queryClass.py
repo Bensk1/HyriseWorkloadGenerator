@@ -1,9 +1,12 @@
 import linecache
 import os
 import re
+from random import randint
 from subprocess import Popen, PIPE
 from jinja2 import Template
 from column import Column
+
+TABLE_HEADER_SIZE = 4
 
 class QueryClass:
 
@@ -11,14 +14,40 @@ class QueryClass:
         self.description = description
         self.table = table
         self.columns = columns
-        self.values = values
         self.tableDirectory = tableDirectory
+        self.values = self.parseValues(values)
         self.datatypes = []
         self.statistics = []
 
         self.checkAndCreateQueryFolder()
         self.queryJson = self.createQueryJson()
         self.writeQueryFile()
+
+    def parseValues(self, values):
+        if values <> 'auto':
+            return values
+
+        rows = self.getRowsInTable()
+        rowNumber = randint(1 + TABLE_HEADER_SIZE , rows + TABLE_HEADER_SIZE)
+        tableFile = "%s/%s.tbl" % (self.tableDirectory, self.table)
+        randomRow = linecache.getline(tableFile, rowNumber)
+
+        columnsOfRow = randomRow.split('|')
+        values = []
+
+        for column in self.columns:
+            values.append(columnsOfRow[column])
+
+        return values
+
+
+    def getRowsInTable(self):
+        wc = Popen(["wc -l %s/%s.tbl" % (self.tableDirectory, self.table)], shell = True, stdout = PIPE)
+        (output, err) = wc.communicate()
+        wc.wait()
+
+        rows = int(output.split(' ')[0]) - TABLE_HEADER_SIZE
+        return rows
 
     def showStatistics(self):
         print "%s: %s" % (self.description, self.statistics)
