@@ -45,7 +45,14 @@ class Workload(Object):
 
         self.threadPool = Pool(len(self.queryClasses))
 
-        self.statistics = []
+        self.statistics = self.initializeStatistics()
+
+    def initializeStatistics(self):
+        statistics = {}
+        for queryClass in self.queryClasses:
+            statistics[queryClass.description] = []
+
+        return statistics
 
     def getTableNames(self):
         tableNames = []
@@ -148,10 +155,8 @@ class Workload(Object):
                 for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
                     print "%i queries of type %s" % (numberOfQueries, queryClass.description)
 
-            day = []
-            for numberOfQueries in self.currentQueryBatchOrder:
-                day.append(numberOfQueries * self.batches)
-            self.statistics.append(day)
+            for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
+                self.statistics[queryClass.description].append(numberOfQueries)
 
             self.threadPoolResults = []
 

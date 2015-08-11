@@ -4,34 +4,41 @@
     "verbose": false,
     "queryClasses": [
         {
-            "description": "test",
+            "description": "Customer inquiries",
             "table": "customer",
             "columns": [1, 0],
             "values": ["VRPUH95L", 675075]
         },
         {
-            "description": "test2",
+            "description": "Order management",
             "table": "order",
             "columns": [0],
             "values": [1052757]
         },
         {
-            "description": "test3",
+            "description": "Customer engagement",
             "table": "customer",
             "columns": [10],
             "values": [329078]
+        },
+        {
+            "description": "Software test",
+            "table": "customer",
+            "columns": [0],
+            "values": [675076]
         }
+
     ],
     "queryClassDistributions": [
         {
             "description": "Initial Distribution",
             "validFromDay": 1,
-            "distribution": [0.5, 0.25, 0.25]
+            "distribution": [0.5, 0.3, 0.2, 0.0]
         },
         {
             "description": "New BI Software",
             "validFromDay": 6,
-            "distribution": [0.2, 0.4, 0.4]
+            "distribution": [0.2, 0.5, 0.15, 0.05]
         }
     ]
 }

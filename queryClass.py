@@ -62,6 +62,9 @@ class QueryClass:
     def execute(self, batches, concurrencyLevel):
         requests = batches * concurrencyLevel
 
+        if requests <= 0:
+            return -1
+
         ab = Popen(["ab -q -k -n %i -c %i -r -T \"application/x-www-form-urlencoded\" -p \"%s\" 127.0.0.1:5000/jsonQuery/" % (requests, concurrencyLevel, self.queryFilePath)], shell = True, stdout = PIPE)
         (output, err) = ab.communicate()
         ab.wait()
