@@ -6,12 +6,16 @@ import types
 import copy_reg
 import requests
 import glob
+import time
+import requests
 from multiprocessing import Pool
 from queryClass import QueryClass
 from queryClassDistribution import QueryClassDistribution
 
 QUERY_DIVISOR = 100
-DISTRIBUTION_DIVISOR = 5
+DISTRIBUTION_DIVISOR = 10
+TICK_MS = 0.1
+QUERIES_PER_TICK = 10
 
 def _pickle_method(m):
     if m.im_self is None:
@@ -20,6 +24,24 @@ def _pickle_method(m):
         return getattr, (m.im_self, m.im_func.func_name)
 
 copy_reg.pickle(types.MethodType, _pickle_method)
+
+def simulateDay(dayInformation):
+    ticksPerDay = dayInformation[0]
+    queryFilePath = dayInformation[1]
+    nextTick = time.time()
+
+    queryFile = open(queryFilePath, "r")
+    query = {}
+    query['query'] = queryFile.read()
+
+    while ticksPerDay > 0:
+        r = requests.post("http://localhost:5000/jsonQuery", data=query)
+        nextTick = nextTick + TICK_MS
+        ticksPerDay -= 1
+        # wait including drift correction
+        time.sleep(nextTick - time.time())
+
+    queryFile.close()
 
 class Object:
     def toJSON(self):
@@ -30,7 +52,7 @@ class Workload(Object):
     def __init__(self, days, secondsPerDay, queryClasses, queryClassDistributions, verbose, compressed, tableDirectory):
         self.days = days
         self.currentDay = 1
-        self.queriesPerDay = queriesPerDay
+        self.secondsPerDay = secondsPerDay
         self.tableDirectory = tableDirectory
         self.queryClasses = self.parseQueryClasses(queryClasses, compressed, self.tableDirectory)
         self.queryClassDistributions = self.parseQueryClassDistributions(queryClassDistributions)
@@ -39,11 +61,12 @@ class Workload(Object):
         self.currentQueryOrder = None
         self.activeQueryClassDistributionChanged = False
         self.currentQueryBatchOrder = None
-        self.batches = self.queriesPerDay / (QUERY_DIVISOR / DISTRIBUTION_DIVISOR)
+        self.ticksPerDay = int(1 / TICK_MS * self.secondsPerDay)
+        self.queriesPerDay = self.ticksPerDay * QUERIES_PER_TICK
 
         self.loadAllTables()
 
-        self.threadPool = Pool(len(self.queryClasses))
+        self.threadPool = Pool(QUERIES_PER_TICK)
 
         self.statistics = self.initializeStatistics()
 
@@ -139,7 +162,7 @@ class Workload(Object):
         self.currentQueryBatchOrder = map(lambda x: x / DISTRIBUTION_DIVISOR, self.currentlyActiveQueryDistribution.distribution)
         self.currentQueryOrder = []
 
-        for queryBatch in range(0, self.batches):
+        for queryBatch in range(0, self.ticksPerDay):
             for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
                 self.currentQueryOrder.extend([queryClass] * numberOfQueries)
 
@@ -151,7 +174,7 @@ class Workload(Object):
 
             print "########## Day %i ##########" % (self.currentDay)
             if self.verbose:
-                print "Sending %i queries in %i batches à %i queries" % (self.queriesPerDay, self.batches, QUERY_DIVISOR / DISTRIBUTION_DIVISOR)
+                print "Sending %i queries in %i ticks per day à %i queries" % (self.queriesPerDay, self.ticksPerDay, QUERY_DIVISOR / DISTRIBUTION_DIVISOR)
                 for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
                     print "%i queries of type %s" % (numberOfQueries, queryClass.description)
 
@@ -160,8 +183,16 @@ class Workload(Object):
 
             self.threadPoolResults = []
 
+            currentDayQueries = []
             for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
-                self.threadPoolResults.append(self.threadPool.apply_async(queryClass.execute, [self.batches, numberOfQueries], callback = queryClass.addStatistic))
+                currentDayQueries.extend([(self.ticksPerDay, queryClass.queryFilePath)] * numberOfQueries)
+
+            print currentDayQueries
+
+
+            self.threadPool.map(simulateDay, currentDayQueries, 1)
+            # for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
+                # self.threadPoolResults.append(self.threadPool.apply_async(queryClass.execute, [self.batches, numberOfQueries], callback = queryClass.addStatistic))
 
 
             for threadPoolResult in self.threadPoolResults:

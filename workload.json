@@ -1,7 +1,7 @@
 {
     "days": 10,
-    "queriesPerDay": 100,
-    "verbose": false,
+    "secondsPerDay": 3,
+    "verbose": true,
     "compressed": true,
     "queryClasses": [
         {
@@ -31,7 +31,7 @@
                 },
                 {
                     "name": "0and1or2",
-                    "type": "or",
+                    "type": "and",
                     "l": "0and1",
                     "r": 2
                 }
@@ -106,7 +106,7 @@
          {
              "description": "New BI Software",
              "validFromDay": 6,
-             "distribution": [0.2, 0.5, 0.15, 0.05]
+             "distribution": [0.2, 0.5, 0.1, 0.1]
          }
     ]
 }

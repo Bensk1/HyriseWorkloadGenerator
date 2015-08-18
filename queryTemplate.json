@@ -1,4 +1,4 @@
-query={
+{
   "operators": {
     {% for column in columns %}
     "scanColumn{{column.column}}": {
