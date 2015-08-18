@@ -10,11 +10,12 @@ TABLE_HEADER_SIZE = 4
 
 class QueryClass:
 
-    def __init__(self, description, table, columns, compoundExpressions, values, tableDirectory):
+    def __init__(self, description, table, columns, compoundExpressions, values, compressed, tableDirectory):
         self.description = description
         self.table = table
         self.columns = columns
         self.tableDirectory = tableDirectory
+        self.compressed = compressed
         self.compoundExpressions = self.parseCompoundExpressions(compoundExpressions)
         self.values = self.parseValues(values)
         self.datatypes = []
@@ -43,6 +44,9 @@ class QueryClass:
 
     def renameCompoundExpressionBranch(self, compoundExpressionBranch):
         if type(compoundExpressionBranch) is int:
+            if self.compressed:
+                compoundExpressionBranch = "sC%i" % (compoundExpressionBranch)
+            else:
                 compoundExpressionBranch = "scanColumn%i" % (compoundExpressionBranch)
 
         return compoundExpressionBranch
@@ -82,7 +86,8 @@ class QueryClass:
 
         self.determineQueryFileName()
 
-        with open("queryTemplate.json") as queryTemplate:
+        queryTemplateFile = "queryTemplateCompressed.json" if self.compressed else "queryTemplate.json"
+        with open(queryTemplateFile) as queryTemplate:
             template = Template(queryTemplate.read())
             return template.render(columns = columnObjects, columnLen = len(columnObjects), table = self.table, compoundExpressions = self.compoundExpressions, compoundExpressionLen = len(self.compoundExpressions))
 

@@ -2,6 +2,7 @@
     "days": 10,
     "queriesPerDay": 100,
     "verbose": false,
+    "compressed": true,
     "queryClasses": [
         {
             "description": "CustomerInquiries",

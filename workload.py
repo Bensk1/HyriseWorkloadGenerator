@@ -27,12 +27,12 @@ class Object:
 
 class Workload(Object):
 
-    def __init__(self, days, queriesPerDay, queryClasses, queryClassDistributions, verbose, tableDirectory):
+    def __init__(self, days, secondsPerDay, queryClasses, queryClassDistributions, verbose, compressed, tableDirectory):
         self.days = days
         self.currentDay = 1
         self.queriesPerDay = queriesPerDay
         self.tableDirectory = tableDirectory
-        self.queryClasses = self.parseQueryClasses(queryClasses, self.tableDirectory)
+        self.queryClasses = self.parseQueryClasses(queryClasses, compressed, self.tableDirectory)
         self.queryClassDistributions = self.parseQueryClassDistributions(queryClassDistributions)
         self.verbose = verbose
         self.currentlyActiveQueryDistribution = None
@@ -98,11 +98,11 @@ class Workload(Object):
 
         return loadTableRequest
 
-    def parseQueryClasses(self, queryClasses, tableDirectory):
+    def parseQueryClasses(self, queryClasses, compressed, tableDirectory):
         queryClassesParsed = []
 
         for queryClass in queryClasses:
-            queryClassesParsed.append(QueryClass(queryClass['description'], queryClass['table'], queryClass['columns'], queryClass['compoundExpressions'], queryClass['values'], tableDirectory))
+            queryClassesParsed.append(QueryClass(queryClass['description'], queryClass['table'], queryClass['columns'], queryClass['compoundExpressions'], queryClass['values'], compressed, tableDirectory))
 
         return queryClassesParsed
 
@@ -186,5 +186,5 @@ else:
     with open(workloadConfigFile) as workloadFile:
             workloadConfig = json.load(workloadFile)
 
-    w = Workload(workloadConfig['days'], workloadConfig['queriesPerDay'], workloadConfig['queryClasses'], workloadConfig['queryClassDistributions'], workloadConfig['verbose'], tableDirectory)
+    w = Workload(workloadConfig['days'], workloadConfig['secondsPerDay'], workloadConfig['queryClasses'], workloadConfig['queryClassDistributions'], workloadConfig['verbose'], workloadConfig['compressed'], tableDirectory)
     w.run()
