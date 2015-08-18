@@ -4,27 +4,94 @@
     "verbose": false,
     "queryClasses": [
         {
-            "description": "Customer inquiries",
+            "description": "CustomerInquiries",
             "table": "customer",
             "columns": [1, 0],
-            "values": ["VRPUH95L", 675075]
+            "compoundExpressions": [
+                {
+                    "name": "0or1",
+                    "type": "or",
+                    "l": 0,
+                    "r": 1
+                }
+            ],
+            "values": ["VRPUH95L", 672525]
         },
         {
-            "description": "Order management",
+            "description": "OrderManagement",
             "table": "order",
-            "columns": [0],
-            "values": [1052757]
+            "columns": [0, 1, 2],
+            "compoundExpressions": [
+                {
+                    "name": "0and1",
+                    "type": "and",
+                    "l": 0,
+                    "r": 1
+                },
+                {
+                    "name": "0and1or2",
+                    "type": "or",
+                    "l": "0and1",
+                    "r": 2
+                }
+            ],
+            "values": [503116, "qOS67OH", "flgThV"]
         },
         {
-            "description": "Customer engagement",
+            "description": "CustomerEngagement",
             "table": "customer",
-            "columns": [10],
+            "columns": [0, 1, 2, 3, 4, 5, 6, 7],
+            "compoundExpressions": [
+                {
+                    "name": "0and1",
+                    "type": "and",
+                    "l": 0,
+                    "r": 1
+                },
+                {
+                    "name": "2and3",
+                    "type": "and",
+                    "l": 2,
+                    "r": 3
+                },
+                {
+                    "name": "4and5",
+                    "type": "and",
+                    "l": 4,
+                    "r": 5
+                },
+                {
+                    "name": "6and7",
+                    "type": "and",
+                    "l": 6,
+                    "r": 7
+                },
+                {
+                    "name": "0and1or2and3",
+                    "type": "or",
+                    "l": "0and1",
+                    "r": "2and3"
+                },
+                {
+                    "name": "4and5or6and7",
+                    "type": "or",
+                    "l": "4and5",
+                    "r": "6and7"
+                },
+                {
+                    "name": "0and1or2and3or4and5or6and7",
+                    "type": "or",
+                    "l": "0and1or2and3",
+                    "r": "4and5or6and7"
+                }
+            ],
             "values": "auto"
         },
         {
-            "description": "Software test",
+            "description": "SoftwareTest",
             "table": "customer",
             "columns": [0],
+            "compoundExpressions": [],
             "values": [675076]
         }
 
@@ -34,11 +101,11 @@
             "description": "Initial Distribution",
             "validFromDay": 1,
             "distribution": [0.5, 0.3, 0.2, 0.0]
-        },
-        {
-            "description": "New BI Software",
-            "validFromDay": 6,
-            "distribution": [0.2, 0.5, 0.15, 0.05]
-        }
+         },
+         {
+             "description": "New BI Software",
+             "validFromDay": 6,
+             "distribution": [0.2, 0.5, 0.15, 0.05]
+         }
     ]
 }

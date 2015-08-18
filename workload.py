@@ -102,7 +102,7 @@ class Workload(Object):
         queryClassesParsed = []
 
         for queryClass in queryClasses:
-            queryClassesParsed.append(QueryClass(queryClass['description'], queryClass['table'], queryClass['columns'], queryClass['values'], tableDirectory))
+            queryClassesParsed.append(QueryClass(queryClass['description'], queryClass['table'], queryClass['columns'], queryClass['compoundExpressions'], queryClass['values'], tableDirectory))
 
         return queryClassesParsed
 

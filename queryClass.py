@@ -10,11 +10,12 @@ TABLE_HEADER_SIZE = 4
 
 class QueryClass:
 
-    def __init__(self, description, table, columns, values, tableDirectory):
+    def __init__(self, description, table, columns, compoundExpressions, values, tableDirectory):
         self.description = description
         self.table = table
         self.columns = columns
         self.tableDirectory = tableDirectory
+        self.compoundExpressions = self.parseCompoundExpressions(compoundExpressions)
         self.values = self.parseValues(values)
         self.datatypes = []
         self.statistics = []
@@ -40,6 +41,18 @@ class QueryClass:
 
         return values
 
+    def renameCompoundExpressionBranch(self, compoundExpressionBranch):
+        if type(compoundExpressionBranch) is int:
+                compoundExpressionBranch = "scanColumn%i" % (compoundExpressionBranch)
+
+        return compoundExpressionBranch
+
+    def parseCompoundExpressions(self, compoundExpressions):
+        for compoundExpression in compoundExpressions:
+            compoundExpression['l'] = self.renameCompoundExpressionBranch(compoundExpression['l'])
+            compoundExpression['r'] = self.renameCompoundExpressionBranch(compoundExpression['r'])
+
+        return compoundExpressions
 
     def getRowsInTable(self):
         wc = Popen(["wc -l %s/%s.tbl" % (self.tableDirectory, self.table)], shell = True, stdout = PIPE)
@@ -64,15 +77,14 @@ class QueryClass:
 
         columnObjects = []
         for i, (column, value, datatype) in enumerate(zip(self.columns, self.values, self.datatypes)):
-            last = True if i == len(self.columns) - 1 else False
-            colObject = Column(column, value, datatype, last)
+            colObject = Column(column, value, datatype)
             columnObjects.append(colObject)
 
         self.determineQueryFileName()
 
         with open("queryTemplate.json") as queryTemplate:
             template = Template(queryTemplate.read())
-            return template.render(columns = columnObjects, columnLen = len(columnObjects), table = self.table)
+            return template.render(columns = columnObjects, columnLen = len(columnObjects), table = self.table, compoundExpressions = self.compoundExpressions, compoundExpressionLen = len(self.compoundExpressions))
 
     def determineQueryFileName(self):
         self.queryFilePath = "queries/%s.json" % (self.description)

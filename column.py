@@ -5,8 +5,7 @@ DATATYPES = {
 
 class Column():
 
-    def __init__(self, column, value, datatype, last):
+    def __init__(self, column, value, datatype):
         self.column = column
         self.value = value
         self.datatype = DATATYPES[datatype]
-        self.last = last
