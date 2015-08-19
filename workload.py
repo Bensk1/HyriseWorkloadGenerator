@@ -8,14 +8,15 @@ import requests
 import glob
 import time
 import requests
+import numpy as np
 from multiprocessing import Pool
 from queryClass import QueryClass
 from queryClassDistribution import QueryClassDistribution
 
 QUERY_DIVISOR = 100
-DISTRIBUTION_DIVISOR = 10
-TICK_MS = 0.1
-QUERIES_PER_TICK = 10
+DISTRIBUTION_DIVISOR = 5
+TICK_MS = 0.15
+QUERIES_PER_TICK = 20
 
 def _pickle_method(m):
     if m.im_self is None:
@@ -27,21 +28,29 @@ copy_reg.pickle(types.MethodType, _pickle_method)
 
 def simulateDay(dayInformation):
     ticksPerDay = dayInformation[0]
-    queryFilePath = dayInformation[1]
-    nextTick = time.time()
+    queryFilePath = dayInformation[1].queryFilePath
 
     queryFile = open(queryFilePath, "r")
     query = {}
     query['query'] = queryFile.read()
+    query['performance'] = "true"
 
+    totalTimes = []
+
+    nextTick = time.time()
     while ticksPerDay > 0:
         r = requests.post("http://localhost:5000/jsonQuery", data=query)
-        nextTick = nextTick + TICK_MS
+        performanceData = r.json()["performanceData"]
+        totalTimes.append(performanceData[-1]["endTime"] - performanceData[0]["startTime"])
+
         ticksPerDay -= 1
+        nextTick = nextTick + TICK_MS
         # wait including drift correction
         time.sleep(nextTick - time.time())
 
     queryFile.close()
+
+    return totalTimes
 
 class Object:
     def toJSON(self):
@@ -125,7 +134,7 @@ class Workload(Object):
         queryClassesParsed = []
 
         for queryClass in queryClasses:
-            queryClassesParsed.append(QueryClass(queryClass['description'], queryClass['table'], queryClass['columns'], queryClass['compoundExpressions'], queryClass['values'], compressed, tableDirectory))
+            queryClassesParsed.append(QueryClass(queryClass['description'], queryClass['table'], queryClass['columns'], queryClass['compoundExpressions'], queryClass['values'], compressed, tableDirectory, self.days))
 
         return queryClassesParsed
 
@@ -166,6 +175,16 @@ class Workload(Object):
             for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
                 self.currentQueryOrder.extend([queryClass] * numberOfQueries)
 
+    def calculateStatistics(self, queryStatistics):
+        statistics = {}
+        statistics['mean'] = map(lambda x: np.mean(x) if len(x) > 0 else 0, queryStatistics)
+        statistics['min'] = map(lambda x: np.min(x) if len(x) > 0 else 0, queryStatistics)
+        statistics['max'] = map(lambda x: np.max(x) if len(x) > 0 else 0, queryStatistics)
+        statistics['median'] = map(lambda x: np.median(x) if len(x) > 0 else 0, queryStatistics)
+        statistics['percentile25'] = map(lambda x: np.percentile(x, 25) if len(x) > 0 else 0, queryStatistics)
+        statistics['percentile75'] = map(lambda x: np.percentile(x, 75) if len(x) > 0 else 0, queryStatistics)
+
+        return statistics
 
     def run(self):
         while self.currentDay <= self.days:
@@ -185,24 +204,24 @@ class Workload(Object):
 
             currentDayQueries = []
             for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
-                currentDayQueries.extend([(self.ticksPerDay, queryClass.queryFilePath)] * numberOfQueries)
+                currentDayQueries.extend([(self.ticksPerDay, queryClass)] * numberOfQueries)
 
-            print currentDayQueries
-
-
-            self.threadPool.map(simulateDay, currentDayQueries, 1)
+            dayStatistics = self.threadPool.map(simulateDay, currentDayQueries, 1)
+            for query, statistic in zip(currentDayQueries, dayStatistics):
+                queryClass = query[1]
+                queryClass.addStatistics(self.currentDay, statistic)
             # for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
-                # self.threadPoolResults.append(self.threadPool.apply_async(queryClass.execute, [self.batches, numberOfQueries], callback = queryClass.addStatistic))
+                # self.threadPoolResults.append(self.threadPool.apply_async(queryClass.execute, [self.batches, numberOfQueries], callback = queryClass.addStatistics))
 
 
-            for threadPoolResult in self.threadPoolResults:
-                threadPoolResult.wait()
+            # for threadPoolResult in self.threadPoolResults:
+            #     threadPoolResult.wait()
 
             self.currentDay += 1
 
         performanceStatistics = {}
         for queryClass in self.queryClasses:
-            performanceStatistics[queryClass.description] = queryClass.statistics
+            performanceStatistics[queryClass.description] = self.calculateStatistics(queryClass.statistics)
         print "Workload performance: %s" % (performanceStatistics)
 
         print "Workload statistics: %s" % (self.statistics)

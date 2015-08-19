@@ -10,7 +10,7 @@ TABLE_HEADER_SIZE = 4
 
 class QueryClass:
 
-    def __init__(self, description, table, columns, compoundExpressions, values, compressed, tableDirectory):
+    def __init__(self, description, table, columns, compoundExpressions, values, compressed, tableDirectory, days):
         self.description = description
         self.table = table
         self.columns = columns
@@ -19,7 +19,7 @@ class QueryClass:
         self.compoundExpressions = self.parseCompoundExpressions(compoundExpressions)
         self.values = self.parseValues(values)
         self.datatypes = []
-        self.statistics = []
+        self.statistics = [[] for i in range(days)]
 
         self.checkAndCreateQueryFolder()
         self.queryJson = self.createQueryJson()
@@ -69,8 +69,8 @@ class QueryClass:
     def showStatistics(self):
         print "%s: %s" % (self.description, self.statistics)
 
-    def addStatistic(self, value):
-        self.statistics.append(value)
+    def addStatistics(self, day, values):
+        self.statistics[day - 1] += values
 
     def checkAndCreateQueryFolder(self):
         if not os.path.exists("queries"):
