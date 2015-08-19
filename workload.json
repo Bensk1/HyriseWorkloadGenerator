@@ -1,6 +1,6 @@
 {
     "days": 10,
-    "secondsPerDay": 3,
+    "secondsPerDay": 1,
     "verbose": true,
     "compressed": true,
     "queryClasses": [
@@ -108,5 +108,15 @@
              "validFromDay": 6,
              "distribution": [0.2, 0.5, 0.1, 0.2]
          }
+    ],
+    "periodicQueryClasses": [
+        {
+            "description": "Monday Consolidation",
+            "table": "supplier",
+            "columns": [0],
+            "compoundExpressions": [],
+            "values": "auto",
+            "period": 4
+        }
     ]
 }

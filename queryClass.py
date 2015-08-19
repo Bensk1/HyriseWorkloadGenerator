@@ -28,6 +28,8 @@ class QueryClass:
         self.values = self.parseValues(values)
         self.datatypes = []
         self.statistics = [[] for i in range(days)]
+        self.period = 0
+        self.activeToday = True
 
         self.checkAndCreateQueryFolder()
         self.queryJson = self.createQueryJson()

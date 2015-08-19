@@ -15,6 +15,9 @@ QUERY_DIVISOR = 100
 DISTRIBUTION_DIVISOR = 5
 TICK_MS = 0.15
 QUERIES_PER_TICK = 20
+PERIODIC_QUERIES_PER_TICK = 4
+RANDOM_QUERIES_PER_TICK = 0
+TOTAL_QUERIES_PER_DAY = QUERIES_PER_TICK + PERIODIC_QUERIES_PER_TICK + RANDOM_QUERIES_PER_TICK
 
 def _pickle_method(m):
     if m.im_self is None:
@@ -26,6 +29,11 @@ copy_reg.pickle(types.MethodType, _pickle_method)
 
 def simulateDay(dayInformation):
     ticksPerDay = dayInformation[0]
+
+    # Nothing to do today
+    if dayInformation[1] == None:
+        return
+
     queryFilePath = dayInformation[1].queryFilePath
 
     queryFile = open(queryFilePath, "r")
@@ -56,13 +64,14 @@ class Object:
 
 class Workload(Object):
 
-    def __init__(self, days, secondsPerDay, queryClasses, queryClassDistributions, verbose, compressed, tableDirectory):
+    def __init__(self, days, secondsPerDay, queryClasses, queryClassDistributions, periodicQueryClasses, verbose, compressed, tableDirectory):
         self.days = days
         self.currentDay = 1
         self.secondsPerDay = secondsPerDay
         self.tableDirectory = tableDirectory
         self.queryClasses = self.parseQueryClasses(queryClasses, compressed, self.tableDirectory)
         self.queryClassDistributions = self.parseQueryClassDistributions(queryClassDistributions)
+        self.periodicQueryClasses = self.parseQueryClasses(periodicQueryClasses, compressed, self.tableDirectory)
         self.verbose = verbose
         self.currentlyActiveQueryDistribution = None
         self.currentQueryOrder = None
@@ -73,7 +82,7 @@ class Workload(Object):
 
         self.loadAllTables()
 
-        self.threadPool = Pool(QUERIES_PER_TICK)
+        self.threadPool = Pool(QUERIES_PER_TICK + PERIODIC_QUERIES_PER_TICK + RANDOM_QUERIES_PER_TICK)
 
         self.statistics = self.initializeStatistics()
 
@@ -81,6 +90,8 @@ class Workload(Object):
         statistics = {}
         for queryClass in self.queryClasses:
             statistics[queryClass.description] = []
+        for periodicQueryClass in self.periodicQueryClasses:
+            statistics[periodicQueryClass.description] = []
 
         return statistics
 
@@ -130,9 +141,13 @@ class Workload(Object):
 
     def parseQueryClasses(self, queryClasses, compressed, tableDirectory):
         queryClassesParsed = []
+        periods = []
 
         for queryClass in queryClasses:
             queryClassesParsed.append(QueryClass(queryClass['description'], queryClass['table'], queryClass['columns'], queryClass['compoundExpressions'], queryClass['values'], compressed, tableDirectory, self.days))
+            if 'period' in queryClass:
+                queryClassesParsed[-1].period = queryClass['period']
+                periods.append(queryClass['period'])
 
         return queryClassesParsed
 
@@ -172,16 +187,28 @@ class Workload(Object):
         for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
             self.currentQueryOrder.extend([queryClass] * numberOfQueries)
 
+    def addPeriodicQueries(self, currentDayQueries):
+        executingPeriodicQueriesToday = False
+
+        for periodicQueryClass in self.periodicQueryClasses:
+            if self.currentDay % periodicQueryClass.period == 0:
+                executingPeriodicQueriesToday = True
+                periodicQueryClass.activeToday = True
+                currentDayQueries.extend([(self.ticksPerDay, periodicQueryClass)] * PERIODIC_QUERIES_PER_TICK)
+                self.statistics[periodicQueryClass.description].append(PERIODIC_QUERIES_PER_TICK)
+            else:
+                periodicQueryClass.activeToday = False
+
+        if not executingPeriodicQueriesToday:
+            # Nothing to do today
+            currentDayQueries.extend([(self.ticksPerDay, None)] * PERIODIC_QUERIES_PER_TICK)
+            self.statistics[periodicQueryClass.description].append(0)
+
+
     def run(self):
         while self.currentDay <= self.days:
             self.currentlyActiveQueryDistribution = self.determineCurrentlyActiveDistribution()
             self.determineQueryOrder()
-
-            print "########## Day %i ##########" % (self.currentDay)
-            if self.verbose:
-                print "Sending %i queries in %i ticks per day à %i queries" % (self.queriesPerDay, self.ticksPerDay, QUERY_DIVISOR / DISTRIBUTION_DIVISOR)
-                for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
-                    print "%i queries of type %s" % (numberOfQueries, queryClass.description)
 
             for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
                 self.statistics[queryClass.description].append(numberOfQueries)
@@ -190,16 +217,36 @@ class Workload(Object):
             for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
                 currentDayQueries.extend([(self.ticksPerDay, queryClass)] * numberOfQueries)
 
+            self.addPeriodicQueries(currentDayQueries)
+
+            queriesToday = reduce(lambda x, y: (x[0] + y[0], None) if y[1] != None else (x[0], None), currentDayQueries)[0]
+
             dayStatistics = self.threadPool.map(simulateDay, currentDayQueries, 1)
             for query, statistic in zip(currentDayQueries, dayStatistics):
                 queryClass = query[1]
-                queryClass.addStatistics(self.currentDay, statistic)
+                if queryClass <> None:
+                    queryClass.addStatistics(self.currentDay, statistic)
+
+            print "########## Day %i ##########" % (self.currentDay)
+            if self.verbose:
+                print "Sending %i queries in %i ticks per day à %i queries" % (queriesToday, self.ticksPerDay, queriesToday / self.ticksPerDay)
+                for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
+                    print "%i queries of type %s" % (numberOfQueries, queryClass.description)
+
+                for periodicQueryClass in self.periodicQueryClasses:
+                    if periodicQueryClass.activeToday:
+                        print "%i queries of type %s" % (PERIODIC_QUERIES_PER_TICK, periodicQueryClass.description)
+                    else:
+                        print "%i queries of type %s" % (0, periodicQueryClass.description)
 
             self.currentDay += 1
 
         performanceStatistics = {}
         for queryClass in self.queryClasses:
             performanceStatistics[queryClass.description] = queryClass.calculateStatistics()
+
+        for periodicQueryClass in self.periodicQueryClasses:
+            performanceStatistics[periodicQueryClass.description] = periodicQueryClass.calculateStatistics()
 
         print "Workload performance: %s" % (performanceStatistics)
 
@@ -215,5 +262,5 @@ else:
     with open(workloadConfigFile) as workloadFile:
             workloadConfig = json.load(workloadFile)
 
-    w = Workload(workloadConfig['days'], workloadConfig['secondsPerDay'], workloadConfig['queryClasses'], workloadConfig['queryClassDistributions'], workloadConfig['verbose'], workloadConfig['compressed'], tableDirectory)
+    w = Workload(workloadConfig['days'], workloadConfig['secondsPerDay'], workloadConfig['queryClasses'], workloadConfig['queryClassDistributions'], workloadConfig['periodicQueryClasses'], workloadConfig['verbose'], workloadConfig['compressed'], tableDirectory)
     w.run()
