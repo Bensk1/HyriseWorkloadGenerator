@@ -7,8 +7,6 @@ import copy_reg
 import requests
 import glob
 import time
-import requests
-import numpy as np
 from multiprocessing import Pool
 from queryClass import QueryClass
 from queryClassDistribution import QueryClassDistribution
@@ -98,7 +96,7 @@ class Workload(Object):
 
     def buildAndSendRequests(self, tableName):
         loadTableRequest = self.buildLoadTableRequest(tableName)
-        r = requests.post("http://localhost:5000/jsonQuery", data = loadTableRequest)
+        requests.post("http://localhost:5000/jsonQuery", data = loadTableRequest)
 
     def loadAllTables(self):
         print "Load all tables in directory: %s" % (self.tableDirectory)
@@ -171,20 +169,8 @@ class Workload(Object):
         self.currentQueryBatchOrder = map(lambda x: x / DISTRIBUTION_DIVISOR, self.currentlyActiveQueryDistribution.distribution)
         self.currentQueryOrder = []
 
-        for queryBatch in range(0, self.ticksPerDay):
-            for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
-                self.currentQueryOrder.extend([queryClass] * numberOfQueries)
-
-    def calculateStatistics(self, queryStatistics):
-        statistics = {}
-        statistics['mean'] = map(lambda x: np.mean(x) if len(x) > 0 else 0, queryStatistics)
-        statistics['min'] = map(lambda x: np.min(x) if len(x) > 0 else 0, queryStatistics)
-        statistics['max'] = map(lambda x: np.max(x) if len(x) > 0 else 0, queryStatistics)
-        statistics['median'] = map(lambda x: np.median(x) if len(x) > 0 else 0, queryStatistics)
-        statistics['percentile25'] = map(lambda x: np.percentile(x, 25) if len(x) > 0 else 0, queryStatistics)
-        statistics['percentile75'] = map(lambda x: np.percentile(x, 75) if len(x) > 0 else 0, queryStatistics)
-
-        return statistics
+        for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
+            self.currentQueryOrder.extend([queryClass] * numberOfQueries)
 
     def run(self):
         while self.currentDay <= self.days:
@@ -200,8 +186,6 @@ class Workload(Object):
             for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
                 self.statistics[queryClass.description].append(numberOfQueries)
 
-            self.threadPoolResults = []
-
             currentDayQueries = []
             for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
                 currentDayQueries.extend([(self.ticksPerDay, queryClass)] * numberOfQueries)
@@ -210,18 +194,13 @@ class Workload(Object):
             for query, statistic in zip(currentDayQueries, dayStatistics):
                 queryClass = query[1]
                 queryClass.addStatistics(self.currentDay, statistic)
-            # for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
-                # self.threadPoolResults.append(self.threadPool.apply_async(queryClass.execute, [self.batches, numberOfQueries], callback = queryClass.addStatistics))
-
-
-            # for threadPoolResult in self.threadPoolResults:
-            #     threadPoolResult.wait()
 
             self.currentDay += 1
 
         performanceStatistics = {}
         for queryClass in self.queryClasses:
-            performanceStatistics[queryClass.description] = self.calculateStatistics(queryClass.statistics)
+            performanceStatistics[queryClass.description] = queryClass.calculateStatistics()
+
         print "Workload performance: %s" % (performanceStatistics)
 
         print "Workload statistics: %s" % (self.statistics)

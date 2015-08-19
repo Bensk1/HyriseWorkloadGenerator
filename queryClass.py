@@ -1,12 +1,20 @@
 import linecache
 import os
-import re
+import numpy as np
 from random import randint
 from subprocess import Popen, PIPE
 from jinja2 import Template
 from column import Column
 
 TABLE_HEADER_SIZE = 4
+STATISTICAL_FUNCTIONS = {
+    'mean': np.mean,
+    'min': np.min,
+    'max': np.max,
+    'median': np.median,
+    'percentile25': lambda x: np.percentile(x, 25),
+    'percentile75': lambda x: np.percentile(x, 75)
+}
 
 class QueryClass:
 
@@ -66,8 +74,13 @@ class QueryClass:
         rows = int(output.split(' ')[0]) - TABLE_HEADER_SIZE
         return rows
 
-    def showStatistics(self):
-        print "%s: %s" % (self.description, self.statistics)
+    def calculateStatistics(self):
+        statistics = {}
+
+        for key in STATISTICAL_FUNCTIONS:
+            statistics[key] = map(lambda x: STATISTICAL_FUNCTIONS[key](x) if len(x) > 0 else 0, self.statistics)
+
+        return statistics
 
     def addStatistics(self, day, values):
         self.statistics[day - 1] += values
@@ -104,20 +117,3 @@ class QueryClass:
             tableFile = "%s/%s.tbl" % (self.tableDirectory, self.table)
             datatypes = linecache.getline(tableFile, 2)
             self.datatypes.append(datatypes.split('|')[column])
-
-    def execute(self, batches, concurrencyLevel):
-        requests = batches * concurrencyLevel
-
-        if requests <= 0:
-            return None
-
-        ab = Popen(["ab -q -k -n %i -c %i -r -T \"application/x-www-form-urlencoded\" -p \"%s\" 127.0.0.1:5000/jsonQuery/" % (requests, concurrencyLevel, self.queryFilePath)], shell = True, stdout = PIPE)
-        (output, err) = ab.communicate()
-        ab.wait()
-        timeTakenString = output.split('\n')[15]
-        timeTaken = float(re.findall("\d+.\d+", timeTakenString)[0])
-        timeTakenInMs = timeTaken / requests * 1000
-
-        print "%s: %s (%fms per request)" % (self.description, timeTaken, timeTakenInMs)
-
-        return timeTakenInMs
