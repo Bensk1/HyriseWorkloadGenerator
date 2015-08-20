@@ -243,9 +243,9 @@ class Workload(Object):
         for periodicQueryClass in self.periodicQueryClasses:
             performanceStatistics[periodicQueryClass.description] = periodicQueryClass.calculateStatistics()
 
-        print "Workload performance: %s" % (performanceStatistics)
+        print "workloadPerformances = %s" % (performanceStatistics)
 
-        print "Workload statistics: %s" % (self.statistics)
+        print "workloadStatistics = %s" % (self.statistics)
 
 if len(sys.argv) <> 3:
     print "Usage: python generator.py workload.json tableDirectory"
