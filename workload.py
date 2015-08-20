@@ -16,6 +16,7 @@ QUERIES_PER_TICK = 20
 DISTRIBUTION_DIVISOR = 100 / QUERIES_PER_TICK
 PERIODIC_QUERIES_PER_TICK = 4
 RANDOM_QUERIES_PER_TICK = 0
+TOTAL_QUERIES_PER_TICK = QUERIES_PER_TICK + PERIODIC_QUERIES_PER_TICK + RANDOM_QUERIES_PER_TICK
 
 def _pickle_method(m):
     if m.im_self is None:
@@ -25,36 +26,14 @@ def _pickle_method(m):
 
 copy_reg.pickle(types.MethodType, _pickle_method)
 
-def simulateDay(dayInformation):
-    ticksPerDay = dayInformation[0]
+def tick(query):
+    if query == None:
+        return 0
 
-    # Nothing to do today
-    if dayInformation[1] == None:
-        return
+    r = requests.post("http://localhost:5000/jsonQuery", data=query)
+    performanceData = r.json()["performanceData"]
 
-    queryFilePath = dayInformation[1].queryFilePath
-
-    queryFile = open(queryFilePath, "r")
-    query = {}
-    query['query'] = queryFile.read()
-    query['performance'] = "true"
-
-    totalTimes = []
-
-    nextTick = time.time()
-    while ticksPerDay > 0:
-        r = requests.post("http://localhost:5000/jsonQuery", data=query)
-        performanceData = r.json()["performanceData"]
-        totalTimes.append(performanceData[-1]["endTime"] - performanceData[0]["startTime"])
-
-        ticksPerDay -= 1
-        nextTick = nextTick + TICK_MS
-        # wait including drift correction
-        time.sleep(nextTick - time.time())
-
-    queryFile.close()
-
-    return totalTimes
+    return performanceData[-1]["endTime"] - performanceData[0]["startTime"]
 
 class Object:
     def toJSON(self):
@@ -74,13 +53,12 @@ class Workload(Object):
         self.verbose = verbose
         self.currentlyActiveQueryDistribution = None
         self.currentQueryOrder = None
-        self.activeQueryClassDistributionChanged = False
         self.currentQueryBatchOrder = None
         self.ticksPerDay = int(1 / TICK_MS * self.secondsPerDay)
 
         self.loadAllTables()
 
-        self.threadPool = Pool(QUERIES_PER_TICK + PERIODIC_QUERIES_PER_TICK + RANDOM_QUERIES_PER_TICK)
+        self.threadPool = Pool(TOTAL_QUERIES_PER_TICK)
 
         self.statistics = self.initializeStatistics()
 
@@ -159,14 +137,10 @@ class Workload(Object):
 
     def determineCurrentlyActiveDistribution(self):
         activeQueryClassDistribution = None
-        oldActiveQueryClassDistribution = self.currentlyActiveQueryDistribution
 
         for queryClassDistribution in self.queryClassDistributions:
             if self.currentDay >= queryClassDistribution.validFromDay:
                 activeQueryClassDistribution = queryClassDistribution
-
-        if oldActiveQueryClassDistribution <> activeQueryClassDistribution:
-            self.activeQueryClassDistributionChanged = True
 
         if activeQueryClassDistribution <> None:
             return activeQueryClassDistribution
@@ -174,11 +148,6 @@ class Workload(Object):
             print "Wrong configuration of query class distributions"
 
     def determineQueryOrder(self):
-        if self.activeQueryClassDistributionChanged == False:
-            return
-
-        self.activeQueryClassDistributionChanged = False
-
         self.currentQueryBatchOrder = map(lambda x: x / DISTRIBUTION_DIVISOR, self.currentlyActiveQueryDistribution.distribution)
         self.currentQueryOrder = []
 
@@ -192,7 +161,6 @@ class Workload(Object):
             if self.currentDay % periodicQueryClass.period == 0:
                 executingPeriodicQueriesToday = True
                 periodicQueryClass.activeToday = True
-                self.activeQueryClassDistributionChanged = True
 
                 currentQueryOrder.extend([(self.ticksPerDay, periodicQueryClass)] * PERIODIC_QUERIES_PER_TICK)
                 self.statistics[periodicQueryClass.description].append(PERIODIC_QUERIES_PER_TICK)
@@ -204,13 +172,53 @@ class Workload(Object):
             currentQueryOrder.extend([(self.ticksPerDay, None)] * PERIODIC_QUERIES_PER_TICK)
             self.statistics[periodicQueryClass.description].append(0)
 
+    def prepareQueries(self):
+        self.queries = []
+        for currentQuery in self.currentQueryOrder:
+            if currentQuery[1] == None:
+                self.queries.append(None)
+                continue
+
+            queryFile = open(currentQuery[1].queryFilePath, "r")
+            query = {}
+            query['query'] = queryFile.read()
+            query['performance'] = "true"
+
+            queryFile.close()
+            self.queries.append(query)
+
+    def simulateDay(self):
+        ticksPerDay = self.ticksPerDay
+        dayStatistics = [[] for i in range(TOTAL_QUERIES_PER_TICK)]
+        resultObjects = []
+        statisticsBuffer = []
+
+        nextTick = time.time()
+        while ticksPerDay > 0:
+            resultObjects.append(self.threadPool.map_async(tick, self.queries, 1))
+
+            ticksPerDay -= 1
+            nextTick += TICK_MS
+
+            # wait including drift correction
+            time.sleep(nextTick - time.time())
+
+        for resultObject in resultObjects:
+            statisticsBuffer.append(resultObject.get())
+
+        for tickStatistics in statisticsBuffer:
+            for tickStatistic, queryStatistic in zip(tickStatistics, dayStatistics):
+                queryStatistic.append(tickStatistic)
+
+        return dayStatistics
+
     def calculateOverallStatistics(self, performanceStatistics):
         overall = {}
 
         for performanceStatistic in performanceStatistics.itervalues():
             for key in performanceStatistic.keys():
                 if key not in overall:
-                    overall[key] = [0.0 for l in range(len(performanceStatistic[key]))]
+                    overall[key] = [0.0 for i in range(len(performanceStatistic[key]))]
                 overall[key] =  map(lambda x, y: x + y, overall[key], performanceStatistic[key])
 
         performanceStatistics['Overall'] = overall
@@ -227,7 +235,10 @@ class Workload(Object):
 
             queriesToday = reduce(lambda x, y: (x[0] + y[0], None) if y[1] != None else (x[0], None), self.currentQueryOrder)[0]
 
-            dayStatistics = self.threadPool.map(simulateDay, self.currentQueryOrder, 1)
+            self.prepareQueries()
+
+            dayStatistics = self.simulateDay()
+
             for query, statistic in zip(self.currentQueryOrder, dayStatistics):
                 queryClass = query[1]
                 if queryClass <> None:
