@@ -258,6 +258,10 @@ class Workload(Object):
 
             self.currentDay += 1
 
+        print
+        print "All queries sent. Calculating statistics now..."
+        print
+
         performanceStatistics = {}
         for queryClass in self.queryClasses:
             performanceStatistics[queryClass.description] = queryClass.calculateStatistics()
@@ -268,16 +272,24 @@ class Workload(Object):
         if self.overallStatistics:
             self.calculateOverallStatistics(performanceStatistics)
 
-        print "workloadPerformances = %s" % (performanceStatistics)
+        if 'outputFile' in globals():
+            with open(outputFile, 'w') as oFile:
+                oFile.write("workloadPerformances = %s\n" % (performanceStatistics))
+                oFile.write("workloadStatistics = %s\n" % (self.statistics))
+                oFile.close()
+                print "Statistics written to %s" % (outputFile)
+        else:
+            print "workloadPerformances = %s" % (performanceStatistics)
+            print "workloadStatistics = %s" % (self.statistics)
 
-        print "workloadStatistics = %s" % (self.statistics)
-
-if len(sys.argv) <> 3:
-    print "Usage: python generator.py workload.json tableDirectory"
+if len(sys.argv) < 3:
+    print "Usage: python generator.py workload.json tableDirectory [outputFile]"
     sys.exit()
 else:
     workloadConfigFile = sys.argv[1]
     tableDirectory = sys.argv[2]
+    if len(sys.argv) > 3:
+        outputFile = sys.argv[3]
 
     with open(workloadConfigFile) as workloadFile:
             workloadConfig = json.load(workloadFile)
