@@ -11,13 +11,11 @@ from multiprocessing import Pool
 from queryClass import QueryClass
 from queryClassDistribution import QueryClassDistribution
 
-QUERY_DIVISOR = 100
-DISTRIBUTION_DIVISOR = 5
 TICK_MS = 0.15
 QUERIES_PER_TICK = 20
+DISTRIBUTION_DIVISOR = 100 / QUERIES_PER_TICK
 PERIODIC_QUERIES_PER_TICK = 4
 RANDOM_QUERIES_PER_TICK = 0
-TOTAL_QUERIES_PER_DAY = QUERIES_PER_TICK + PERIODIC_QUERIES_PER_TICK + RANDOM_QUERIES_PER_TICK
 
 def _pickle_method(m):
     if m.im_self is None:
@@ -78,7 +76,6 @@ class Workload(Object):
         self.activeQueryClassDistributionChanged = False
         self.currentQueryBatchOrder = None
         self.ticksPerDay = int(1 / TICK_MS * self.secondsPerDay)
-        self.queriesPerDay = self.ticksPerDay * QUERIES_PER_TICK
 
         self.loadAllTables()
 
