@@ -3,6 +3,7 @@
     "secondsPerDay": 1,
     "verbose": true,
     "compressed": true,
+    "calculateOverallStatistics": false,
     "queryClasses": [
         {
             "description": "CustomerInquiries",

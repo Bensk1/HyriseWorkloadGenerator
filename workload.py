@@ -62,10 +62,11 @@ class Object:
 
 class Workload(Object):
 
-    def __init__(self, days, secondsPerDay, queryClasses, queryClassDistributions, periodicQueryClasses, verbose, compressed, tableDirectory):
+    def __init__(self, days, secondsPerDay, queryClasses, queryClassDistributions, periodicQueryClasses, verbose, compressed, overallStatistics, tableDirectory):
         self.days = days
         self.currentDay = 1
         self.secondsPerDay = secondsPerDay
+        self.overallStatistics = overallStatistics
         self.tableDirectory = tableDirectory
         self.queryClasses = self.parseQueryClasses(queryClasses, compressed, self.tableDirectory)
         self.queryClassDistributions = self.parseQueryClassDistributions(queryClassDistributions)
@@ -203,6 +204,16 @@ class Workload(Object):
             currentQueryOrder.extend([(self.ticksPerDay, None)] * PERIODIC_QUERIES_PER_TICK)
             self.statistics[periodicQueryClass.description].append(0)
 
+    def calculateOverallStatistics(self, performanceStatistics):
+        overall = {}
+
+        for performanceStatistic in performanceStatistics.itervalues():
+            for key in performanceStatistic.keys():
+                if key not in overall:
+                    overall[key] = [0.0 for l in range(len(performanceStatistic[key]))]
+                overall[key] =  map(lambda x, y: x + y, overall[key], performanceStatistic[key])
+
+        performanceStatistics['Overall'] = overall
 
     def run(self):
         while self.currentDay <= self.days:
@@ -243,6 +254,9 @@ class Workload(Object):
         for periodicQueryClass in self.periodicQueryClasses:
             performanceStatistics[periodicQueryClass.description] = periodicQueryClass.calculateStatistics()
 
+        if self.overallStatistics:
+            self.calculateOverallStatistics(performanceStatistics)
+
         print "workloadPerformances = %s" % (performanceStatistics)
 
         print "workloadStatistics = %s" % (self.statistics)
@@ -257,5 +271,5 @@ else:
     with open(workloadConfigFile) as workloadFile:
             workloadConfig = json.load(workloadFile)
 
-    w = Workload(workloadConfig['days'], workloadConfig['secondsPerDay'], workloadConfig['queryClasses'], workloadConfig['queryClassDistributions'], workloadConfig['periodicQueryClasses'], workloadConfig['verbose'], workloadConfig['compressed'], tableDirectory)
+    w = Workload(workloadConfig['days'], workloadConfig['secondsPerDay'], workloadConfig['queryClasses'], workloadConfig['queryClassDistributions'], workloadConfig['periodicQueryClasses'], workloadConfig['verbose'], workloadConfig['compressed'], workloadConfig['calculateOverallStatistics'], tableDirectory)
     w.run()
