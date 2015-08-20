@@ -182,23 +182,25 @@ class Workload(Object):
         self.currentQueryOrder = []
 
         for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
-            self.currentQueryOrder.extend([queryClass] * numberOfQueries)
+            self.currentQueryOrder.extend([(self.ticksPerDay, queryClass)] * numberOfQueries)
 
-    def addPeriodicQueries(self, currentDayQueries):
+    def addPeriodicQueries(self, currentQueryOrder):
         executingPeriodicQueriesToday = False
 
         for periodicQueryClass in self.periodicQueryClasses:
             if self.currentDay % periodicQueryClass.period == 0:
                 executingPeriodicQueriesToday = True
                 periodicQueryClass.activeToday = True
-                currentDayQueries.extend([(self.ticksPerDay, periodicQueryClass)] * PERIODIC_QUERIES_PER_TICK)
+                self.activeQueryClassDistributionChanged = True
+
+                currentQueryOrder.extend([(self.ticksPerDay, periodicQueryClass)] * PERIODIC_QUERIES_PER_TICK)
                 self.statistics[periodicQueryClass.description].append(PERIODIC_QUERIES_PER_TICK)
             else:
                 periodicQueryClass.activeToday = False
 
         if not executingPeriodicQueriesToday:
             # Nothing to do today
-            currentDayQueries.extend([(self.ticksPerDay, None)] * PERIODIC_QUERIES_PER_TICK)
+            currentQueryOrder.extend([(self.ticksPerDay, None)] * PERIODIC_QUERIES_PER_TICK)
             self.statistics[periodicQueryClass.description].append(0)
 
 
@@ -210,16 +212,12 @@ class Workload(Object):
             for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
                 self.statistics[queryClass.description].append(numberOfQueries)
 
-            currentDayQueries = []
-            for numberOfQueries, queryClass in zip(self.currentQueryBatchOrder, self.queryClasses):
-                currentDayQueries.extend([(self.ticksPerDay, queryClass)] * numberOfQueries)
+            self.addPeriodicQueries(self.currentQueryOrder)
 
-            self.addPeriodicQueries(currentDayQueries)
+            queriesToday = reduce(lambda x, y: (x[0] + y[0], None) if y[1] != None else (x[0], None), self.currentQueryOrder)[0]
 
-            queriesToday = reduce(lambda x, y: (x[0] + y[0], None) if y[1] != None else (x[0], None), currentDayQueries)[0]
-
-            dayStatistics = self.threadPool.map(simulateDay, currentDayQueries, 1)
-            for query, statistic in zip(currentDayQueries, dayStatistics):
+            dayStatistics = self.threadPool.map(simulateDay, self.currentQueryOrder, 1)
+            for query, statistic in zip(self.currentQueryOrder, dayStatistics):
                 queryClass = query[1]
                 if queryClass <> None:
                     queryClass.addStatistics(self.currentDay, statistic)
