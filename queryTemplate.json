@@ -24,7 +24,7 @@
   },
   "edges": [
     {% for column in columns -%}
-    ["get", "scanColumn{{loop.index0}}"]{% if not loop.last or compoundExpressionLen > 0 %},{% endif %}
+    ["get", "scanColumn{{column.column}}"]{% if not loop.last or compoundExpressionLen > 0 %},{% endif %}
     {% endfor -%}
     {%- for compoundExpression in compoundExpressions %}
     ["{{compoundExpression.l}}", "{{compoundExpression.name}}"],

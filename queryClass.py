@@ -119,3 +119,6 @@ class QueryClass:
             tableFile = "%s/%s.tbl" % (self.tableDirectory, self.table)
             datatypes = linecache.getline(tableFile, 2)
             self.datatypes.append(datatypes.split('|')[column])
+
+        # Last column is followed by \n, throw that away
+        self.datatypes[-1] = self.datatypes[-1].split('\n')[0]
