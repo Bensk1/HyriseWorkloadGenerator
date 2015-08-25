@@ -168,9 +168,10 @@ class Workload(Object):
                 periodicQueryClass.activeToday = False
 
         if not executingPeriodicQueriesToday:
-            # Nothing to do today
-            currentQueryOrder.extend([(self.ticksPerDay, None)] * PERIODIC_QUERIES_PER_TICK)
-            self.statistics[periodicQueryClass.description].append(0)
+            for periodicQueryClass in self.periodicQueryClasses:
+                # Nothing to do today
+                currentQueryOrder.extend([(self.ticksPerDay, None)] * PERIODIC_QUERIES_PER_TICK)
+                self.statistics[periodicQueryClass.description].append(0)
 
     def prepareQueries(self):
         self.queries = []
@@ -223,6 +224,27 @@ class Workload(Object):
 
         performanceStatistics['Overall'] = overall
 
+    def buildIndexOptimizationRequest(self):
+        indexOptimizationRequest = {'query': '{\
+            "operators": {\
+                "optimizeIndex": {\
+                    "type" : "SelfManagedIndexOptimization"\
+                },\
+                "NoOp": {\
+                    "type" : "NoOp"\
+                }\
+            },\
+            "edges" : [\
+                ["optimizeIndex", "NoOp"]\
+            ]\
+        }'}
+
+        return indexOptimizationRequest
+
+    def triggerIndexOptimization(self):
+        indexOptimizationRequest = self.buildIndexOptimizationRequest()
+        requests.post("http://localhost:5000/jsonQuery", data = indexOptimizationRequest)
+
     def run(self):
         while self.currentDay <= self.days:
             self.currentlyActiveQueryDistribution = self.determineCurrentlyActiveDistribution()
@@ -255,6 +277,8 @@ class Workload(Object):
                         print "%i queries of type %s" % (PERIODIC_QUERIES_PER_TICK, periodicQueryClass.description)
                     else:
                         print "%i queries of type %s" % (0, periodicQueryClass.description)
+
+            self.triggerIndexOptimization()
 
             self.currentDay += 1
 
