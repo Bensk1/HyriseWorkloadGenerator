@@ -45,6 +45,10 @@ class QueryClass:
         randomRow = linecache.getline(tableFile, rowNumber)
 
         columnsOfRow = randomRow.split('|')
+
+        # Last column is followed by \n, throw that away
+        columnsOfRow[-1] = columnsOfRow[-1].split('\n')[0]
+
         values = []
 
         for column in self.columns:
