@@ -2,20 +2,62 @@
 A workload generator for hyrise
 
 ### Workload Generator
-only numbers divisible by 5 for distributions
-only numbers divisible by 100 for queries
+The workload generator sends automatically a configurable workload to Hyrise. It does this by simulating days and the workload might change for different days. Some parts of the workload might also occur periodically. Performance will be recorded and statistics calculated. The specifications for the workloads and general simulation are defined in json format. An example is given in workload.json.
 
+The workload generator reads the specification and automatically builds json query plans in HYRISE format. Those queries are **not** sent as fast as possible, the workload generator tries to simulate a real workload by not putting the system under full load, but sending some queries approximately every 150ms. 
 
-QueryClass
-- selectivity (values that are in the result set)
-- periodic?
-- description
+#### Workload configuration
 
-ToDo:
-random query class which occurs randomly (boundaries) and selects randomly
+A configuration consists of the following attributes, all of them are mandatory: days, secondsPerDay, verbose, compressed, calculateOverallStatistics, queryClasses, queryClassDistributions, periodicQueryClasses.
+
+- **days** (*int*) : days the generator is going to simulate
+- **secondsPerDay** (*int*) : how long should the simulation of one of these days take
+- **verbose** (*bool*) : prints additional information during simulation
+- **compressed** (*bool*) : decreases size of the json queries significantly. Deactivate for debuggin!
+- **verbose** (*bool*) : prints additional information during simulation
+- **calculateOverallStatistics** (*bool*) : calculate statistics for all workloads combined
+- **queryClasses** (*Array of Objects*) : array that contains QueryClasses
+- **queryClassDistributions** (*Array of Objects*) : array that contains QueryClassDistributions
+- **periodicQueryClasses** (*Array of Objects*) : array that contains PeriodicQueryClasses
+
+#### QueryClasses
+
+QueryClasses are the differnt parts of workloads. A workload might for example consist of the classes: order processing, sales aggregations and item consolidation. A QueryClass contains the following attributes, all of them are mandatory: description, table, columns, compoundExpressions, values, auto.
+
+- **description** (*string*) : a textual description for your workload. Be descriptive! The description appears in the statistics
+- **table** (*string*) : the name of the table the query class targets
+- **columns** (*Array of ints*) : the database columns to be queried
+- **compoundExpressions** (*Array of Objects*) : array that cointains CompoundExpressions
+- **values** (*string or array of strings/ints*) : if it is set to string, the only possible value can be auto. In this case the workload generator takes a random line from the table and adds the values for the corresponding columns to the query. If it is an array then a value has to be provided for each entry in *columns*.
+
+#### CompoundExpression
+
+CompoundExpressions are necessary for combining the result of scans of multiple columns. If you specified for example `columns: [0, 2, 5]` you have to specify how their results should be combined. A CompoundExpression contains the following attributes, all of them are mandatory: name, type, l, r
+
+- **name** (*string*) : name of the CompoundExpression which is necessary to combine its result with another CompoundExpression
+- **type** (*string*) : can only be `and` or `or` for now
+- **l** (*int or string*) : if it is set to int, it takes the result of the scan on the column specified as its first input value. If it is set to string it takes the result of another CompoundExpression with the specified name as its first input value.
+- **r** (*int or string*) : analogous to `l`, but for the second input value.
+
+#### QueryClassDistribution
+
+QueryClassDistributions are specifying the amounts of queries sent of a specific type in a specific time span. A QueryClassDistribution contains the following attributes, all of them are mandatory: description, validFromDay, distribution
+
+- **description** (*string*) : description of the query class distribution
+- **validFromDay** (*int*) : the distribution is valid from the specified day
+- **distribution** (*Array of Floats*) : the floats have to add up to 1.0 and have to be multiples of 0.05 (0.0 is a multiple of 0.05). They are applied to the query classes and have to be specified in the same order as in `queryClasses`
+
+#### PeriodicQueryClass
+
+PeriodicQueryClasses are not executed every day, but only periodically. Therefore it adds a single mandatory attribute to the QueryClass:
+
+- **period** (*int*): the QueryClass is executed every n-th day
+
 
 ### Table Generator
 The table generator generates tables in a hyrise-suitable format. The specifications of the tables to generate have to be provided as a configuration file. The specifications are defined in json format. An example is given in the config.json file in the tableGenerator directory.
+
+#### Table configuration
 
 A configuration consists of the following attributes, all of them are mandatory: name, rows, columns, stringsForEachInt, stringLength, uniqueValues.
 
