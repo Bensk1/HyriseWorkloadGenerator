@@ -1,8 +1,7 @@
 # HyriseWorkloadGenerator
-A workload generator for hyrise
 
 ### Workload Generator
-The workload generator sends automatically a configurable workload to Hyrise. It does this by simulating days and the workload might change for different days. Some parts of the workload might also occur periodically. Performance will be recorded and statistics calculated. The specifications for the workloads and general simulation are defined in json format. An example is given in workload.json.
+The workload generator sends automatically a configurable workload to Hyrise. It does this by simulating days and the workload might change for different days. Some parts of the workload might also occur periodically. Performance will be recorded and statistics calculated. The specifications for the workloads and general simulation are defined in json format. An example is given in *workloadSample.json*.
 
 The workload generator reads the specification and automatically builds json query plans in HYRISE format. Those queries are **not** sent as fast as possible, the workload generator tries to simulate a real workload by not putting the system under full load, but sending some queries approximately every 150ms. 
 
@@ -53,9 +52,15 @@ PeriodicQueryClasses are not executed every day, but only periodically. Therefor
 
 - **period** (*int*): the QueryClass is executed every n-th day
 
+**Usage**:
+python workload.py workload.json tableDirectory [outputFile]
+
+The *tableDirectory* should contain all the *.tbl files being used for the queries.
+If *outputFile* is specified the statistical results are written to a file and not printed to stdout.
+
 
 ### Table Generator
-The table generator generates tables in a hyrise-suitable format. The specifications of the tables to generate have to be provided as a configuration file. The specifications are defined in json format. An example is given in the config.json file in the tableGenerator directory.
+The table generator generates tables in a hyrise-suitable format. The specifications of the tables to generate have to be provided as a configuration file. The specifications are defined in json format. An example is given in the *config.json* file in the tableGenerator directory.
 
 #### Table configuration
 
