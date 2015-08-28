@@ -228,7 +228,7 @@ class Workload(Object):
         indexOptimizationRequest = {'query': '{\
             "operators": {\
                 "optimizeIndex": {\
-                    "type" : "SelfManagedIndexOptimization"\
+                    "type" : "SelfTunedIndexSelection"\
                 },\
                 "NoOp": {\
                     "type" : "NoOp"\
