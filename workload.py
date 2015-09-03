@@ -11,7 +11,7 @@ from multiprocessing import Pool
 from queryClass import QueryClass
 from queryClassDistribution import QueryClassDistribution
 
-TICK_MS = 0.15
+TICK_MS = 0.2
 QUERIES_PER_TICK = 20
 DISTRIBUTION_DIVISOR = 100 / QUERIES_PER_TICK
 PERIODIC_QUERIES_PER_TICK = 4
@@ -55,6 +55,8 @@ class Workload(Object):
         self.currentQueryOrder = None
         self.currentQueryBatchOrder = None
         self.ticksPerDay = int(1 / TICK_MS * self.secondsPerDay)
+
+        self.clearIndexOptimizer()
 
         self.loadAllTables()
 
@@ -223,6 +225,30 @@ class Workload(Object):
                 overall[key] =  map(lambda x, y: x + y, overall[key], performanceStatistic[key])
 
         performanceStatistics['Overall'] = overall
+
+    def clearIndexOptimizer(self):
+        clearIndexOptimizerRequest = self.buildClearIndexOptimizerRequest()
+        requests.post("http://localhost:5000/jsonQuery", data = clearIndexOptimizerRequest)
+
+        print "Cleared the SelfTunedIndexSelector and dropped all Indexes"
+
+    def buildClearIndexOptimizerRequest(self):
+        clearIndexOptimizerRequest = {'query': '{\
+            "operators": {\
+                "optimizeIndex": {\
+                    "type" : "SelfTunedIndexSelection",\
+                    "clear": true\
+                },\
+                "NoOp": {\
+                    "type" : "NoOp"\
+                }\
+            },\
+            "edges" : [\
+                ["optimizeIndex", "NoOp"]\
+            ]\
+        }'}
+
+        return clearIndexOptimizerRequest
 
     def buildIndexOptimizationRequest(self):
         indexOptimizationRequest = {'query': '{\
