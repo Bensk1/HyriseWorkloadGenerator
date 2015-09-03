@@ -41,7 +41,7 @@ class Object:
 
 class Workload(Object):
 
-    def __init__(self, days, secondsPerDay, queryClasses, queryClassDistributions, periodicQueryClasses, verbose, compressed, overallStatistics, tableDirectory):
+    def __init__(self, days, secondsPerDay, queryClasses, queryClassDistributions, periodicQueryClasses, verbose, compressed, overallStatistics, indexOptimization, tableDirectory):
         self.days = days
         self.currentDay = 1
         self.secondsPerDay = secondsPerDay
@@ -55,6 +55,7 @@ class Workload(Object):
         self.currentQueryOrder = None
         self.currentQueryBatchOrder = None
         self.ticksPerDay = int(1 / TICK_MS * self.secondsPerDay)
+        self.indexOptimization = indexOptimization
 
         self.clearIndexOptimizer()
 
@@ -304,7 +305,8 @@ class Workload(Object):
                     else:
                         print "%i queries of type %s" % (0, periodicQueryClass.description)
 
-            self.triggerIndexOptimization()
+            if self.indexOptimization:
+                self.triggerIndexOptimization()
 
             self.currentDay += 1
 
@@ -344,5 +346,5 @@ else:
     with open(workloadConfigFile) as workloadFile:
             workloadConfig = json.load(workloadFile)
 
-    w = Workload(workloadConfig['days'], workloadConfig['secondsPerDay'], workloadConfig['queryClasses'], workloadConfig['queryClassDistributions'], workloadConfig['periodicQueryClasses'], workloadConfig['verbose'], workloadConfig['compressed'], workloadConfig['calculateOverallStatistics'], tableDirectory)
+    w = Workload(workloadConfig['days'], workloadConfig['secondsPerDay'], workloadConfig['queryClasses'], workloadConfig['queryClassDistributions'], workloadConfig['periodicQueryClasses'], workloadConfig['verbose'], workloadConfig['compressed'], workloadConfig['calculateOverallStatistics'], workloadConfig['indexOptimization'], tableDirectory)
     w.run()

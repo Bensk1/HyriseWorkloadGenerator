@@ -4,6 +4,7 @@
     "verbose": true,
     "compressed": true,
     "calculateOverallStatistics": false,
+    "indexOptimization": false,
     "queryClasses": [
         {
             "description": "CustomerInquiries",

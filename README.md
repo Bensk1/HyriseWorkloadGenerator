@@ -7,14 +7,15 @@ The workload generator reads the specification and automatically builds json que
 
 #### Workload configuration
 
-A configuration consists of the following attributes, all of them are mandatory: days, secondsPerDay, verbose, compressed, calculateOverallStatistics, queryClasses, queryClassDistributions, periodicQueryClasses.
+A configuration consists of the following attributes, all of them are mandatory: days, secondsPerDay, verbose, compressed, calculateOverallStatistics, indexOptimization, queryClasses, queryClassDistributions, periodicQueryClasses.
 
 - **days** (*int*) : days the generator is going to simulate
 - **secondsPerDay** (*int*) : how long should the simulation of one of these days take
 - **verbose** (*bool*) : prints additional information during simulation
 - **compressed** (*bool*) : decreases size of the json queries significantly. Deactivate for debuggin!
 - **verbose** (*bool*) : prints additional information during simulation
-- **calculateOverallStatistics** (*bool*) : calculate statistics for all workloads combined
+- **calculateOverallStatistics** (*bool*) : calculate statistics for all workloads aggregated
+- **indexOptimization** (*bool*) : whether to trigger index optimization or not
 - **queryClasses** (*Array of Objects*) : array that contains QueryClasses
 - **queryClassDistributions** (*Array of Objects*) : array that contains QueryClassDistributions
 - **periodicQueryClasses** (*Array of Objects*) : array that contains PeriodicQueryClasses
