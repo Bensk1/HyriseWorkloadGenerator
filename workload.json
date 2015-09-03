@@ -1,28 +1,43 @@
 {
-    "days": 6,
-    "secondsPerDay": 1.5,
+    "days": 25,
+    "secondsPerDay": 3,
     "verbose": true,
     "compressed": true,
-    "calculateOverallStatistics": false,
+    "calculateOverallStatistics": true,
+    "indexOptimization": true,
     "queryClasses": [
         {
-            "description": "CustomerInquiries",
-            "table": "item",
-            "columns": [7],
+            "description": "Customer",
+            "table": "customer",
+            "columns": [0],
             "compoundExpressions": [],
             "values": "auto"
         },
         {
-            "description": "OrderManagement",
+            "description": "Order",
             "table": "order",
             "columns": [0],
             "compoundExpressions": [],
             "values": "auto"
         },
         {
-            "description": "CustomerEngagement",
+            "description": "Supplier",
             "table": "supplier",
-            "columns": [1],
+            "columns": [0],
+            "compoundExpressions": [],
+            "values": "auto"
+        },
+        {
+            "description": "Item",
+            "table": "item",
+            "columns": [0],
+            "compoundExpressions": [],
+            "values": "auto"
+        },
+        {
+            "description": "Invoice",
+            "table": "invoice",
+            "columns": [0],
             "compoundExpressions": [],
             "values": "auto"
         }
@@ -31,12 +46,27 @@
         {
             "description": "Initial Distribution",
             "validFromDay": 1,
-            "distribution": [0.6, 0.2, 0.2]
+            "distribution": [0.2, 0.2, 0.2, 0.2, 0.2]
         },
         {
             "description": "Second Distribution",
-            "validFromDay": 4,
-            "distribution": [0.1, 0.1, 0.8]
+            "validFromDay": 6,
+            "distribution": [0.1, 0.4, 0.1, 0.2, 0.2]
+        },
+        {
+            "description": "Third Distribution",
+            "validFromDay": 11,
+            "distribution": [0.1, 0.1, 0.6, 0.1, 0.1]
+        },
+        {
+            "description": "Second Distribution",
+            "validFromDay": 16,
+            "distribution": [0.0, 0.0, 0.1, 0.8, 0.1]
+        },
+        {
+            "description": "Second Distribution",
+            "validFromDay": 21,
+            "distribution": [0.0, 0.0, 0.0, 0.1, 0.9]
         }
     ],
     "periodicQueryClasses": [
