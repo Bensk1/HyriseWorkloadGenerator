@@ -46,12 +46,12 @@
         {
             "description": "Initial Distribution",
             "validFromDay": 1,
-            "distribution": [0.2, 0.2, 0.2, 0.2, 0.2]
+            "distribution": [0.2, 0.2, 0.2, 0.3, 0.1]
         },
         {
             "description": "Second Distribution",
             "validFromDay": 6,
-            "distribution": [0.1, 0.4, 0.1, 0.2, 0.2]
+            "distribution": [0.1, 0.4, 0.1, 0.1, 0.3]
         },
         {
             "description": "Third Distribution",
