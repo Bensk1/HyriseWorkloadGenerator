@@ -10,6 +10,7 @@
             "description": "CustomerInquiries",
             "table": "customer",
             "columns": [1, 0],
+            "predicateTypes": ["EQ", "EQ"],
             "compoundExpressions": [
                 {
                     "name": "0or1",
@@ -24,6 +25,7 @@
             "description": "OrderManagement",
             "table": "order",
             "columns": [0, 1, 2],
+            "predicateTypes": ["EQ", "LT", "GT"],
             "compoundExpressions": [
                 {
                     "name": "0and1",
@@ -44,6 +46,7 @@
             "description": "CustomerEngagement",
             "table": "customer",
             "columns": [0, 1, 2, 3, 4, 5, 6, 7],
+            "predicateTypes": ["EQ", "LT", "GT", "EQ", "LT", "GT", "EQ", "LT"],
             "compoundExpressions": [
                 {
                     "name": "0and1",
@@ -94,6 +97,7 @@
             "description": "SoftwareTest",
             "table": "customer",
             "columns": [0],
+            "predicateTypes": ["EQ"],
             "compoundExpressions": [],
             "values": [675076]
         }

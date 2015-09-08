@@ -4,7 +4,7 @@
     "scanColumn{{column.column}}": {
       "type": "IndexAwareColumnScan",
       "predicates" : [{
-        "type": "EQ",
+        "type": "{{column.predicateType}}",
         "in": 0,
         "f": {{column.column}},
         "value": {% if column.datatype == 2 %}"{% endif %}{{column.value}}{% if column.datatype == 2 %}"{% endif %},

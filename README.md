@@ -22,11 +22,12 @@ A configuration consists of the following attributes, all of them are mandatory:
 
 #### QueryClasses
 
-QueryClasses are the differnt parts of workloads. A workload might for example consist of the classes: order processing, sales aggregations and item consolidation. A QueryClass contains the following attributes, all of them are mandatory: description, table, columns, compoundExpressions, values, auto.
+QueryClasses are the differnt parts of workloads. A workload might for example consist of the classes: order processing, sales aggregations and item consolidation. A QueryClass contains the following attributes, all of them are mandatory: description, table, columns, predicateTypes, compoundExpressions, values, auto.
 
 - **description** (*string*) : a textual description for your workload. Be descriptive! The description appears in the statistics
 - **table** (*string*) : the name of the table the query class targets
 - **columns** (*Array of ints*) : the database columns to be queried
+- **predicateTypes** (*Array of strings*) : the types of predicate to be used. Currently supported: EQ, LT, GT
 - **compoundExpressions** (*Array of Objects*) : array that cointains CompoundExpressions
 - **values** (*string or array of strings/ints*) : if it is set to string, the only possible value can be auto. In this case the workload generator takes a random line from the table and adds the values for the corresponding columns to the query. If it is an array then a value has to be provided for each entry in *columns*.
 

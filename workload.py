@@ -123,7 +123,7 @@ class Workload(Object):
         periods = []
 
         for queryClass in queryClasses:
-            queryClassesParsed.append(QueryClass(queryClass['description'], queryClass['table'], queryClass['columns'], queryClass['compoundExpressions'], queryClass['values'], compressed, tableDirectory, self.days))
+            queryClassesParsed.append(QueryClass(queryClass['description'], queryClass['table'], queryClass['columns'], queryClass['predicateTypes'], queryClass['compoundExpressions'], queryClass['values'], compressed, tableDirectory, self.days))
             if 'period' in queryClass:
                 queryClassesParsed[-1].period = queryClass['period']
                 periods.append(queryClass['period'])
@@ -309,6 +309,9 @@ class Workload(Object):
                 self.triggerIndexOptimization()
 
             self.currentDay += 1
+
+            if (self.currentDay == 4 or self.currentDay == 7):
+                self.clearIndexOptimizer()
 
         print
         print "All queries sent. Calculating statistics now..."

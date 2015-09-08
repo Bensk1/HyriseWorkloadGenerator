@@ -19,10 +19,11 @@ STATISTICAL_FUNCTIONS = {
 
 class QueryClass:
 
-    def __init__(self, description, table, columns, compoundExpressions, values, compressed, tableDirectory, days):
+    def __init__(self, description, table, columns, predicateTypes, compoundExpressions, values, compressed, tableDirectory, days):
         self.description = description
         self.table = table
         self.columns = columns
+        self.predicateTypes = predicateTypes
         self.tableDirectory = tableDirectory
         self.compressed = compressed
         self.compoundExpressions = self.parseCompoundExpressions(compoundExpressions)
@@ -100,8 +101,8 @@ class QueryClass:
         self.determineDatatypes()
 
         columnObjects = []
-        for i, (column, value, datatype) in enumerate(zip(self.columns, self.values, self.datatypes)):
-            colObject = Column(column, value, datatype)
+        for i, (column, predicateType, value, datatype) in enumerate(zip(self.columns, self.predicateTypes, self.values, self.datatypes)):
+            colObject = Column(column, predicateType, value, datatype)
             columnObjects.append(colObject)
 
         self.determineQueryFileName()
