@@ -5,7 +5,7 @@ import os
 
 class Table:
 
-    def __init__(self, name, rows, columns, stringsForEachInt, stringLength, uniqueValues, path):
+    def __init__(self, name, rows, columns, stringsForEachInt, stringLength, uniqueValues, path, metaDataFile):
         self.name = name
         self.rows = rows
         self.columns = columns
@@ -16,6 +16,7 @@ class Table:
 
         self.checkAndCreatePath(path)
         self.outputFile = open("%s/%s.tbl" % (path, self.name), "w")
+        self.metaDataFile = metaDataFile
 
     def checkAndCreatePath(self, path):
         if not os.path.exists(path):
@@ -115,9 +116,20 @@ class Table:
 
             self.outputFile.write(rowValues + "\n")
 
+    def writeTableMetaData(self):
+        self.metaDataFile.write("%s rows: %i\n" % (self.name, self.rows))
+
+        for column in range(0, self.columns):
+            try:
+                int(self.values[column][0])
+                self.metaDataFile.write("Column: %i min %s max %s\n" % (column, self.values[column][0], self.values[column][self.uniqueValues[column] - 1]))
+            except:
+                pass
+
     def build(self):
         self.buildTableHeader()
         self.determineStringColumnLength()
         self.generateValues()
         self.buildTableData()
+        self.writeTableMetaData()
         self.outputFile.close()

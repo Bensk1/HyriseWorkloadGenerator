@@ -6,8 +6,10 @@ def buildTables(configFile, outputDirectory):
     with open(configFile) as configFile:
         tableConfigs = json.load(configFile)
 
+    metaDataFile = open("%s/metadata" % (outputDirectory), "w")
+
     for tableConfig in tableConfigs:
-        table = Table(tableConfig['name'], tableConfig['rows'], tableConfig['columns'], tableConfig['stringsForEachInt'], tableConfig['stringLength'], tableConfig['uniqueValues'], outputDirectory)
+        table = Table(tableConfig['name'], tableConfig['rows'], tableConfig['columns'], tableConfig['stringsForEachInt'], tableConfig['stringLength'], tableConfig['uniqueValues'], outputDirectory, metaDataFile)
         table.build()
 
 if len(sys.argv) <> 3:
