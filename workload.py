@@ -310,9 +310,6 @@ class Workload(Object):
 
             self.currentDay += 1
 
-            if (self.currentDay == 4 or self.currentDay == 7):
-                self.clearIndexOptimizer()
-
         print
         print "All queries sent. Calculating statistics now..."
         print
