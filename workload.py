@@ -7,6 +7,7 @@ import copy_reg
 import requests
 import glob
 import time
+import itertools
 from multiprocessing import Pool
 from queryClass import QueryClass
 from queryClassDistribution import QueryClassDistribution
@@ -47,7 +48,7 @@ class Object:
 
 class Workload(Object):
 
-    def __init__(self, days, secondsPerDay, queryClasses, queryClassDistributions, periodicQueryClasses, verbose, compressed, overallStatistics, indexOptimization, tableDirectory):
+    def __init__(self, days, secondsPerDay, queryClasses, queryClassDistributions, periodicQueryClasses, verbose, compressed, overallStatistics, indexOptimization, findBestIndexConfiguration, tableDirectory):
         self.days = days
         self.currentDay = 1
         self.secondsPerDay = secondsPerDay
@@ -62,6 +63,10 @@ class Workload(Object):
         self.currentQueryBatchOrder = None
         self.ticksPerDay = int(1 / TICK_MS * self.secondsPerDay)
         self.indexOptimization = indexOptimization
+        self.findBestIndexConfiguration = findBestIndexConfiguration
+
+        if self.findBestIndexConfiguration:
+            self.determineIndexConfigurations()
 
         self.clearIndexOptimizer()
 
@@ -79,6 +84,29 @@ class Workload(Object):
             statistics[periodicQueryClass.description] = []
 
         return statistics
+
+    def determineIndexConfigurations(self):
+        tableColumns = []
+
+        for queryClass in self.queryClasses:
+            tableColumn = "%s" % (queryClass.table)
+
+            for column in queryClass.columns:
+                tableColumn += "_%s" % (column)
+
+            tableColumns.append(tableColumn)
+
+        configurations = []
+        for i in range(len(tableColumns)):
+            configurations.append(list(itertools.combinations(tableColumns, i + 1)))
+
+        for configuration in configurations:
+            print len(configuration)
+
+        self.checkConfigurationsMemoryBudget(configurations)
+
+    def checkConfigurationsMemoryBudget(self, configurations):
+        pass
 
     def getTableNames(self):
         tableNames = []
@@ -316,7 +344,7 @@ class Workload(Object):
                     else:
                         print "%i queries of type %s" % (0, periodicQueryClass.description)
 
-            if self.indexOptimization:
+            if self.indexOptimization and not self.findBestIndexConfiguration:
                 self.triggerIndexOptimization()
 
             self.currentDay += 1
@@ -361,5 +389,5 @@ else:
     with open(workloadConfigFile) as workloadFile:
             workloadConfig = json.load(workloadFile)
 
-    w = Workload(workloadConfig['days'], workloadConfig['secondsPerDay'], workloadConfig['queryClasses'], workloadConfig['queryClassDistributions'], workloadConfig['periodicQueryClasses'], workloadConfig['verbose'], workloadConfig['compressed'], workloadConfig['calculateOverallStatistics'], workloadConfig['indexOptimization'], tableDirectory)
+    w = Workload(workloadConfig['days'], workloadConfig['secondsPerDay'], workloadConfig['queryClasses'], workloadConfig['queryClassDistributions'], workloadConfig['periodicQueryClasses'], workloadConfig['verbose'], workloadConfig['compressed'], workloadConfig['calculateOverallStatistics'], workloadConfig['indexOptimization'], workloadConfig['findBestIndexConfiguration'], tableDirectory)
     w.run()

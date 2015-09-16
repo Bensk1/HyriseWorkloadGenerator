@@ -5,6 +5,7 @@
     "compressed": true,
     "calculateOverallStatistics": true,
     "indexOptimization": true,
+    "findBestIndexConfiguration": true,
     "queryClasses": [
         {
             "description": "Customer",
