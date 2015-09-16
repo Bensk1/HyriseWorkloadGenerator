@@ -35,6 +35,12 @@ def tick(query):
 
     return performanceData[-1]["endTime"] - performanceData[0]["startTime"]
 
+def returnAndIncrement(i):
+    value = i[0]
+    i[0] += 1
+
+    return value
+
 class Object:
     def toJSON(self):
         return json.dumps(self, default = lambda obj: obj.__dict__, indent = 2)
@@ -219,12 +225,17 @@ class Workload(Object):
     def calculateOverallStatistics(self, performanceStatistics):
         overall = {}
 
-        for performanceStatistic in performanceStatistics.itervalues():
+        for performanceStatistic, workloadStatistic in zip(performanceStatistics.itervalues(), self.statistics.itervalues()):
+            day = [0]
             for key in performanceStatistic.keys():
                 if key not in overall:
                     overall[key] = [0.0 for i in range(len(performanceStatistic[key]))]
-                overall[key] =  map(lambda x, y: x + y, overall[key], performanceStatistic[key])
+                if key == "mean":
+                    overall[key] =  map(lambda x, y: x + y * workloadStatistic[returnAndIncrement(day)], overall[key], performanceStatistic[key])
+                else:
+                    overall[key] =  map(lambda x, y: x + y, overall[key], performanceStatistic[key])
 
+        overall["mean"] = map(lambda x: x / QUERIES_PER_TICK,  overall["mean"])
         performanceStatistics['Overall'] = overall
 
     def clearIndexOptimizer(self):
