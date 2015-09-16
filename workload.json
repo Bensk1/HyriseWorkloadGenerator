@@ -11,6 +11,7 @@
             "table": "customer",
             "columns": [0],
             "compoundExpressions": [],
+            "predicateTypes": ["EQ"],
             "values": "auto"
         },
         {
@@ -18,6 +19,7 @@
             "table": "order",
             "columns": [0],
             "compoundExpressions": [],
+            "predicateTypes": ["EQ"],
             "values": "auto"
         },
         {
@@ -25,6 +27,7 @@
             "table": "supplier",
             "columns": [0],
             "compoundExpressions": [],
+            "predicateTypes": ["EQ"],
             "values": "auto"
         },
         {
@@ -32,6 +35,7 @@
             "table": "item",
             "columns": [0],
             "compoundExpressions": [],
+            "predicateTypes": ["EQ"],
             "values": "auto"
         },
         {
@@ -39,6 +43,7 @@
             "table": "invoice",
             "columns": [0],
             "compoundExpressions": [],
+            "predicateTypes": ["EQ"],
             "values": "auto"
         }
     ],
