@@ -337,11 +337,15 @@ class Workload(Object):
 
         if 'outputFile' in globals():
             with open(outputFile, 'w') as oFile:
+                oFile.write("threads = %i\n" % (QUERIES_PER_TICK))
+                oFile.write("secondsPerDay = %f\n" % (self.secondsPerDay))
                 oFile.write("workloadPerformances = %s\n" % (performanceStatistics))
                 oFile.write("workloadStatistics = %s\n" % (self.statistics))
                 oFile.close()
                 print "Statistics written to %s" % (outputFile)
         else:
+            print "threads = %i" % (QUERIES_PER_TICK)
+            print "secondsPerDay = %f" % (self.secondsPerDay)
             print "workloadPerformances = %s" % (performanceStatistics)
             print "workloadStatistics = %s" % (self.statistics)
 
