@@ -6,7 +6,7 @@
     "calculateOverallStatistics": true,
     "indexOptimization": true,
     "findBestIndexConfiguration": false,
-    "availableBudget": 56239088,
+    "availableBudget": 84358632,
     "queryClasses": [
         {
             "description": "Customer",
