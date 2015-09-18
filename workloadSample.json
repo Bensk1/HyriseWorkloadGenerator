@@ -5,6 +5,8 @@
     "compressed": true,
     "calculateOverallStatistics": false,
     "indexOptimization": false,
+    "findBestIndexConfiguration": false,
+    "availableBudget": 56239088,
     "queryClasses": [
         {
             "description": "CustomerInquiries",

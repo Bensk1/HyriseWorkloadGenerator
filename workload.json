@@ -1,11 +1,12 @@
 {
     "days": 25,
     "secondsPerDay": 3,
-    "verbose": true,
+    "verbose": false,
     "compressed": true,
     "calculateOverallStatistics": true,
     "indexOptimization": true,
-    "findBestIndexConfiguration": true,
+    "findBestIndexConfiguration": false,
+    "availableBudget": 56239088,
     "queryClasses": [
         {
             "description": "Customer",

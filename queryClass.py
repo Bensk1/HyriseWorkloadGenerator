@@ -37,6 +37,11 @@ class QueryClass:
         self.queryJson = self.createQueryJson()
         self.writeQueryFile()
 
+    def reset(self):
+        self.statistics = [[] for i in range(len(self.statistics))]
+        self.period = 0
+        self.activeToday = True
+
     def parseValues(self, values):
         if values <> 'auto':
             return values

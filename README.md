@@ -3,7 +3,9 @@
 ### Workload Generator
 The workload generator sends automatically a configurable workload to Hyrise. It does this by simulating days and the workload might change for different days. Some parts of the workload might also occur periodically. Performance will be recorded and statistics calculated. The specifications for the workloads and general simulation are defined in json format. An example is given in *workloadSample.json*.
 
-The workload generator reads the specification and automatically builds json query plans in HYRISE format. Those queries are **not** sent as fast as possible, the workload generator tries to simulate a real workload by not putting the system under full load, but sending some queries approximately every 150ms. 
+The workload generator reads the specification and automatically builds json query plans in HYRISE format. Those queries are **not** sent as fast as possible, the workload generator tries to simulate a real workload by not putting the system under full load, but sending some queries approximately every 150ms.
+
+The workload generator is also capable of finding the best index configuration for the defined workload, taking a memory budget into account. It does this by checking at first which of all possible configurations are conform with the memory budget. Afterwards it is going to try all of them. To have slightly more reliable results every configuration is tried multiple times. The amount of tries can be regulated by adjusting REPEAT_BEST_INDEX_RUNS in workload.py. The default value is 3.
 
 #### Workload configuration
 
@@ -16,6 +18,8 @@ A configuration consists of the following attributes, all of them are mandatory:
 - **verbose** (*bool*) : prints additional information during simulation
 - **calculateOverallStatistics** (*bool*) : calculate statistics for all workloads aggregated
 - **indexOptimization** (*bool*) : whether to trigger index optimization or not
+- **findBestIndexConfiguration** (*bool*) : whether to try all possible, but memory budget conforming, index configurations and find the best performing one. **Careful, this setting overwrites indexOptimization. There will of course be no indexOptimization if the generator tries to find the best performing index configuration**
+- **availableBudget** (*int*): the memory budget in bytes which is used to find the best performing index
 - **queryClasses** (*Array of Objects*) : array that contains QueryClasses
 - **queryClassDistributions** (*Array of Objects*) : array that contains QueryClassDistributions
 - **periodicQueryClasses** (*Array of Objects*) : array that contains PeriodicQueryClasses

@@ -18,6 +18,7 @@ DISTRIBUTION_DIVISOR = 100 / QUERIES_PER_TICK
 PERIODIC_QUERIES_PER_TICK = 4
 RANDOM_QUERIES_PER_TICK = 0
 TOTAL_QUERIES_PER_TICK = QUERIES_PER_TICK + PERIODIC_QUERIES_PER_TICK + RANDOM_QUERIES_PER_TICK
+REPEAT_BEST_INDEX_RUNS = 3
 
 def _pickle_method(m):
     if m.im_self is None:
@@ -48,7 +49,7 @@ class Object:
 
 class Workload(Object):
 
-    def __init__(self, days, secondsPerDay, queryClasses, queryClassDistributions, periodicQueryClasses, verbose, compressed, overallStatistics, indexOptimization, findBestIndexConfiguration, tableDirectory):
+    def __init__(self, days, secondsPerDay, queryClasses, queryClassDistributions, periodicQueryClasses, verbose, compressed, overallStatistics, indexOptimization, findBestIndexConfiguration, availableBudget, tableDirectory):
         self.days = days
         self.currentDay = 1
         self.secondsPerDay = secondsPerDay
@@ -63,14 +64,15 @@ class Workload(Object):
         self.currentQueryBatchOrder = None
         self.ticksPerDay = int(1 / TICK_MS * self.secondsPerDay)
         self.indexOptimization = indexOptimization
+        self.availableBudget = availableBudget
         self.findBestIndexConfiguration = findBestIndexConfiguration
 
-        if self.findBestIndexConfiguration:
-            self.determineIndexConfigurations()
-
-        self.clearIndexOptimizer()
+        self.clearIndexOptimizer(False)
 
         self.loadAllTables()
+
+        if self.findBestIndexConfiguration:
+            self.indexConfigurations = self.determineIndexConfigurations()
 
         self.threadPool = Pool(TOTAL_QUERIES_PER_TICK)
 
@@ -100,13 +102,29 @@ class Workload(Object):
         for i in range(len(tableColumns)):
             configurations.append(list(itertools.combinations(tableColumns, i + 1)))
 
-        for configuration in configurations:
-            print len(configuration)
-
-        self.checkConfigurationsMemoryBudget(configurations)
+        return self.checkConfigurationsMemoryBudget(configurations)
 
     def checkConfigurationsMemoryBudget(self, configurations):
-        pass
+        viableConfigurations = []
+
+        for configurationClasses in configurations:
+            viableConfigurationsLen = len(viableConfigurations)
+            for configuration in configurationClasses:
+                availableBudget = self.availableBudget
+                for tableColumn in configuration:
+                    approximateIndexFootpringRequest = self.buildApproximateIndexFootprintRequest(tableColumn)
+                    r = requests.post("http://localhost:5000/jsonQuery", data = approximateIndexFootpringRequest)
+                    footprint = r.json()['rows'][0][0]
+                    availableBudget -= footprint
+
+                if availableBudget > 0:
+                    viableConfigurations.append(configuration)
+
+            # No new configurations from this class? We can skip all following classes because they get even bigger
+            if len(viableConfigurations) <= viableConfigurationsLen:
+                break
+
+        return viableConfigurations
 
     def getTableNames(self):
         tableNames = []
@@ -239,7 +257,11 @@ class Workload(Object):
             nextTick += TICK_MS
 
             # wait including drift correction
-            time.sleep(nextTick - time.time())
+            try:
+                time.sleep(nextTick - time.time())
+            except IOError:
+                time.sleep(TICK_MS)
+                print "Timer exception"
 
         for resultObject in resultObjects:
             statisticsBuffer.append(resultObject.get())
@@ -266,16 +288,36 @@ class Workload(Object):
         overall["mean"] = map(lambda x: x / QUERIES_PER_TICK,  overall["mean"])
         performanceStatistics['Overall'] = overall
 
-    def clearIndexOptimizer(self):
+    def clearIndexOptimizer(self, silent):
         clearIndexOptimizerRequest = self.buildClearIndexOptimizerRequest()
         requests.post("http://localhost:5000/jsonQuery", data = clearIndexOptimizerRequest)
 
-        print "Cleared the SelfTunedIndexSelector and dropped all Indexes"
+        if not silent:
+            print "Cleared the SelfTunedIndexSelector and dropped all Indexes"
+
+    def buildApproximateIndexFootprintRequest(self, tableColumn):
+        approximateIndexFootprintRequest = {'query': '{\
+            "operators": {\
+                "approximateIndex": {\
+                    "type" : "SelfTunedIndexSelection",\
+                    "approximateIndexFootprint": true,\
+                    "tableColumn": "%s"\
+                },\
+                "NoOp": {\
+                    "type" : "NoOp"\
+                }\
+            },\
+            "edges" : [\
+                ["NoOp", "approximateIndex"]\
+            ]\
+        }' % (tableColumn)}
+
+        return approximateIndexFootprintRequest
 
     def buildClearIndexOptimizerRequest(self):
         clearIndexOptimizerRequest = {'query': '{\
             "operators": {\
-                "optimizeIndex": {\
+                "clearSelfTunedIndexSelector": {\
                     "type" : "SelfTunedIndexSelection",\
                     "clear": true\
                 },\
@@ -284,7 +326,7 @@ class Workload(Object):
                 }\
             },\
             "edges" : [\
-                ["optimizeIndex", "NoOp"]\
+                ["NoOp", "clearSelfTunedIndexSelector"]\
             ]\
         }'}
 
@@ -307,11 +349,58 @@ class Workload(Object):
 
         return indexOptimizationRequest
 
+    def buildDropIndexRequest(self, tableColumn):
+        table = tableColumn.split('_')[0]
+
+        dropIndexRequest = {'query': '{\
+            "operators": {\
+                "drop": {\
+                    "type": "DropIndex",\
+                    "indexName": "findBestIndexConfiguration_%s",\
+                    "tableName": "%s"\
+                }\
+            },\
+            "edges" : [\
+                ["drop", "drop"]\
+            ]\
+        }' % (tableColumn, table)}
+
+        return dropIndexRequest
+
+    def buildDropAndCreateIndexRequest(self, tableColumn):
+        table = tableColumn.split('_')[0]
+        column = tableColumn.split('_')[1]
+
+        dropAndCreateIndexRequest = {'query': '{\
+            "operators": {\
+                "drop": {\
+                    "type": "DropIndex",\
+                    "indexName": "findBestIndexConfiguration_%s",\
+                    "tableName": "%s"\
+                },\
+                "get": {\
+                    "type" : "GetTable",\
+                    "name" : "%s"\
+                },\
+                "create": {\
+                    "type": "CreateGroupkeyIndex",\
+                    "fields": [%s],\
+                    "index_name": "findBestIndexConfiguration_%s",\
+                    "forceCompoundValueIdKey": true\
+                }\
+            },\
+            "edges" : [\
+                ["drop", "get"],\
+                ["get", "create"]\
+            ]\
+        }' % (tableColumn, table, table, column, tableColumn)}
+        return dropAndCreateIndexRequest
+
     def triggerIndexOptimization(self):
         indexOptimizationRequest = self.buildIndexOptimizationRequest()
         requests.post("http://localhost:5000/jsonQuery", data = indexOptimizationRequest)
 
-    def run(self):
+    def runScenario(self):
         while self.currentDay <= self.days:
             self.currentlyActiveQueryDistribution = self.determineCurrentlyActiveDistribution()
             self.determineQueryOrder()
@@ -349,11 +438,19 @@ class Workload(Object):
 
             self.currentDay += 1
 
-        print
-        print "All queries sent. Calculating statistics now..."
-        print
+    def createIndexesForConfiguration(self, configuration):
+        for tableColumn in configuration:
+            dropAndCreateIndexRequest = self.buildDropAndCreateIndexRequest(tableColumn)
+            r = requests.post("http://localhost:5000/jsonQuery", data = dropAndCreateIndexRequest)
+            print "Created Index on %s" % (tableColumn)
 
-        performanceStatistics = {}
+    def dropIndexesForConfiguration(self, configuration):
+        for tableColumn in configuration:
+            dropIndexRequest = self.buildDropIndexRequest(tableColumn)
+            r = requests.post("http://localhost:5000/jsonQuery", data = dropIndexRequest)
+            print "Dropped Index on %s" % (tableColumn)
+
+    def calculateFinalStatistics(self, performanceStatistics):
         for queryClass in self.queryClasses:
             performanceStatistics[queryClass.description] = queryClass.calculateStatistics()
 
@@ -363,19 +460,83 @@ class Workload(Object):
         if self.overallStatistics:
             self.calculateOverallStatistics(performanceStatistics)
 
-        if 'outputFile' in globals():
-            with open(outputFile, 'w') as oFile:
-                oFile.write("threads = %i\n" % (QUERIES_PER_TICK))
-                oFile.write("secondsPerDay = %f\n" % (self.secondsPerDay))
-                oFile.write("workloadPerformances = %s\n" % (performanceStatistics))
-                oFile.write("workloadStatistics = %s\n" % (self.statistics))
-                oFile.close()
-                print "Statistics written to %s" % (outputFile)
+    def checkConfigurationPerformances(self, bestTotalConfiguration, bestBeginningConfiguration, performanceStatistics, indexConfiguration):
+        totalTime = reduce(lambda x, y: x + y, performanceStatistics)
+        self.checkConfigurationPerformance(totalTime, bestTotalConfiguration, performanceStatistics, indexConfiguration)
+
+        dayOneTime = performanceStatistics[0]
+        self.checkConfigurationPerformance(dayOneTime, bestBeginningConfiguration, performanceStatistics, indexConfiguration)
+
+    def checkConfigurationPerformance(self, time, best, performance, indexConfiguration):
+        if time < best['time']:
+            best['time'] = time
+            best['configuration'] = indexConfiguration
+            best['total'] = performance
+            print best
+
+    def reset(self):
+        self.currentDay = 1
+        self.clearIndexOptimizer(True)
+        self.statistics = self.initializeStatistics()
+
+        for queryClass in self.queryClasses:
+            queryClass.reset()
+
+        for periodicQueryClass in self.periodicQueryClasses:
+            periodicQueryClass.reset()
+
+
+    def run(self):
+        bestTotalConfiguration = {'time': sys.float_info.max, 'configuration': [], 'total': []}
+        bestBeginningConfiguration = {'time': sys.float_info.max, 'configuration': [], 'total': []}
+
+        if self.findBestIndexConfiguration:
+            for indexConfiguration in self.indexConfigurations:
+                self.createIndexesForConfiguration(indexConfiguration)
+
+                averagePerformanceStatistics = [0 for i in range(self.days)]
+                for i in range(REPEAT_BEST_INDEX_RUNS):
+                    performanceStatistics = {}
+                    self.runScenario()
+
+                    self.calculateFinalStatistics(performanceStatistics)
+                    averagePerformanceStatistics = map(lambda x, y: x + y, averagePerformanceStatistics, performanceStatistics['Overall']['total'])
+
+                    self.reset()
+
+                averagePerformanceStatistics = map(lambda x: x / REPEAT_BEST_INDEX_RUNS, averagePerformanceStatistics)
+                self.checkConfigurationPerformances(bestTotalConfiguration, bestBeginningConfiguration, averagePerformanceStatistics, indexConfiguration)
+
+                self.dropIndexesForConfiguration(indexConfiguration)
+
+            print "Final best configuration:"
+            print bestTotalConfiguration
+            print "###"
+            print "Final best starting configuration:"
+            print bestBeginningConfiguration
         else:
-            print "threads = %i" % (QUERIES_PER_TICK)
-            print "secondsPerDay = %f" % (self.secondsPerDay)
-            print "workloadPerformances = %s" % (performanceStatistics)
-            print "workloadStatistics = %s" % (self.statistics)
+            self.runScenario()
+
+            print
+            print "All queries sent. Calculating statistics now..."
+            print
+
+            performanceStatistics = {}
+            self.calculateFinalStatistics(performanceStatistics)
+
+            if 'outputFile' in globals():
+                with open(outputFile, 'w') as oFile:
+                    oFile.write("threads = %i\n" % (QUERIES_PER_TICK))
+                    oFile.write("secondsPerDay = %f\n" % (self.secondsPerDay))
+                    oFile.write("workloadPerformances = %s\n" % (performanceStatistics))
+                    oFile.write("workloadStatistics = %s\n" % (self.statistics))
+                    oFile.close()
+                    print "Statistics written to %s" % (outputFile)
+            else:
+                print "threads = %i" % (QUERIES_PER_TICK)
+                print "secondsPerDay = %f" % (self.secondsPerDay)
+                print "workloadPerformances = %s" % (performanceStatistics)
+                print "workloadStatistics = %s" % (self.statistics)
 
 if len(sys.argv) < 3:
     print "Usage: python generator.py workload.json tableDirectory [outputFile]"
@@ -389,5 +550,5 @@ else:
     with open(workloadConfigFile) as workloadFile:
             workloadConfig = json.load(workloadFile)
 
-    w = Workload(workloadConfig['days'], workloadConfig['secondsPerDay'], workloadConfig['queryClasses'], workloadConfig['queryClassDistributions'], workloadConfig['periodicQueryClasses'], workloadConfig['verbose'], workloadConfig['compressed'], workloadConfig['calculateOverallStatistics'], workloadConfig['indexOptimization'], workloadConfig['findBestIndexConfiguration'], tableDirectory)
+    w = Workload(workloadConfig['days'], workloadConfig['secondsPerDay'], workloadConfig['queryClasses'], workloadConfig['queryClassDistributions'], workloadConfig['periodicQueryClasses'], workloadConfig['verbose'], workloadConfig['compressed'], workloadConfig['calculateOverallStatistics'], workloadConfig['indexOptimization'], workloadConfig['findBestIndexConfiguration'], workloadConfig['availableBudget'], tableDirectory)
     w.run()
