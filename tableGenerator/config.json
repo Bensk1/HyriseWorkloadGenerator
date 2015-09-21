@@ -9,17 +9,17 @@
     },
     {
         "name": "order",
-        "rows": 150000,
+        "rows": 1500000,
         "columns": 5,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": [150000, 150000, 15000, 1500, 150]
+        "uniqueValues": [1500000, 1500000, 150000, 15000, 1500]
     },
     {
         "name": "supplier",
         "rows": 1500000,
         "columns": 5,
-        "stringsForEachInt": 3,
+        "stringsForEachInt": 4,
         "stringLength": [6, 8],
         "uniqueValues": [1500000, 1500000, 150000, 15000, 1500]
     },

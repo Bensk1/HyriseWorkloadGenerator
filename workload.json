@@ -1,36 +1,37 @@
 {
-    "days": 25,
-    "secondsPerDay": 3,
+    "days": 30,
+    "secondsPerDay": 4,
     "verbose": false,
     "compressed": true,
     "calculateOverallStatistics": true,
+    "statisticsInCycles": false,
     "indexOptimization": true,
     "findBestIndexConfiguration": false,
-    "availableBudget": 84358632,
+    "availableBudget": 58000000,
     "queryClasses": [
         {
             "description": "Customer",
             "table": "customer",
             "columns": [0],
             "compoundExpressions": [],
-            "predicateTypes": ["EQ"],
-            "values": "auto"
+            "predicateTypes": ["GT"],
+            "values": [785958]
         },
         {
             "description": "Order",
             "table": "order",
             "columns": [0],
             "compoundExpressions": [],
-            "predicateTypes": ["EQ"],
-            "values": "auto"
+            "predicateTypes": ["LT"],
+            "values": [57622]
         },
         {
             "description": "Supplier",
             "table": "supplier",
             "columns": [0],
             "compoundExpressions": [],
-            "predicateTypes": ["EQ"],
-            "values": "auto"
+            "predicateTypes": ["GT"],
+            "values": [2397378]
         },
         {
             "description": "Item",
@@ -47,33 +48,74 @@
             "compoundExpressions": [],
             "predicateTypes": ["EQ"],
             "values": "auto"
+        },
+        {
+            "description": "Item2",
+            "table": "item",
+            "columns": [0],
+            "compoundExpressions": [],
+            "predicateTypes": ["EQ"],
+            "values": "auto"
+        },
+        {
+            "description": "Invoice2",
+            "table": "invoice",
+            "columns": [0],
+            "compoundExpressions": [],
+            "predicateTypes": ["EQ"],
+            "values": "auto"
         }
     ],
     "queryClassDistributions": [
         {
             "description": "Initial Distribution",
             "validFromDay": 1,
-            "distribution": [0.2, 0.2, 0.2, 0.3, 0.1]
+            "distribution": [0.2, 0.3, 0.1, 0.3, 0.0, 0.1, 0.0]
         },
         {
             "description": "Second Distribution",
             "validFromDay": 6,
-            "distribution": [0.1, 0.4, 0.1, 0.1, 0.3]
+            "distribution": [0.2, 0.1, 0.3, 0.3, 0.0, 0.1, 0.0]
         },
         {
             "description": "Third Distribution",
             "validFromDay": 11,
-            "distribution": [0.1, 0.1, 0.6, 0.1, 0.1]
+            "distribution": [0.2, 0.3, 0.1, 0.3, 0.0, 0.1, 0.0]
         },
         {
-            "description": "Second Distribution",
+            "description": "Third Distribution2",
+            "validFromDay": 12,
+            "distribution": [0.2, 0.3, 0.1, 0.25, 0.05, 0.1, 0.0]
+        },
+        {
+            "description": "Third Distribution3",
+            "validFromDay": 13,
+            "distribution": [0.2, 0.3, 0.1, 0.20, 0.1, 0.05, 0.05]
+        },
+        {
+            "description": "Third Distribution4",
+            "validFromDay": 14,
+            "distribution": [0.2, 0.3, 0.1, 0.15, 0.15, 0.0, 0.1]
+        },
+        {
+            "description": "Third Distribution5",
+            "validFromDay": 15,
+            "distribution": [0.2, 0.3, 0.1, 0.1, 0.2, 0.0, 0.1]
+        },
+        {
+            "description": "Fourth Distribution",
             "validFromDay": 16,
-            "distribution": [0.0, 0.0, 0.1, 0.8, 0.1]
+            "distribution": [0.2, 0.3, 0.1, 0.0, 0.3, 0.0, 0.1]
         },
         {
-            "description": "Second Distribution",
+            "description": "Fifth Distribution",
             "validFromDay": 21,
-            "distribution": [0.0, 0.0, 0.0, 0.1, 0.9]
+            "distribution": [0.2, 0.1, 0.3, 0.0, 0.3, 0.0, 0.1]
+        },
+        {
+            "description": "Sixth Distribution",
+            "validFromDay": 26,
+            "distribution": [0.2, 0.3, 0.1, 0.0, 0.3, 0.0, 0.1]
         }
     ],
     "periodicQueryClasses": [
