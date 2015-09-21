@@ -28,7 +28,7 @@ def _pickle_method(m):
 
 copy_reg.pickle(types.MethodType, _pickle_method)
 
-def tick(query):
+def tickSeconds(query):
     if query == None:
         return 0
 
@@ -36,6 +36,20 @@ def tick(query):
     performanceData = r.json()["performanceData"]
 
     return performanceData[-1]["endTime"] - performanceData[0]["startTime"]
+
+def tickCycles(query):
+    if query == None:
+        return 0
+
+    r = requests.post("http://localhost:5000/jsonQuery", data=query)
+    performanceData = r.json()["performanceData"]
+
+    cycles = 0
+    for performance in performanceData:
+        if performance["name"] == "IndexAwareColumnScan":
+            cycles += performance["duration"]
+
+    return cycles
 
 def returnAndIncrement(i):
     value = i[0]
@@ -49,11 +63,12 @@ class Object:
 
 class Workload(Object):
 
-    def __init__(self, days, secondsPerDay, queryClasses, queryClassDistributions, periodicQueryClasses, verbose, compressed, overallStatistics, indexOptimization, findBestIndexConfiguration, availableBudget, tableDirectory):
+    def __init__(self, days, secondsPerDay, queryClasses, queryClassDistributions, periodicQueryClasses, verbose, compressed, overallStatistics, statisticsInCycles, indexOptimization, findBestIndexConfiguration, availableBudget, tableDirectory):
         self.days = days
         self.currentDay = 1
         self.secondsPerDay = secondsPerDay
         self.overallStatistics = overallStatistics
+        self.statisticsInCycles = statisticsInCycles
         self.tableDirectory = tableDirectory
         self.queryClasses = self.parseQueryClasses(queryClasses, compressed, self.tableDirectory)
         self.queryClassDistributions = self.parseQueryClassDistributions(queryClassDistributions)
@@ -249,9 +264,14 @@ class Workload(Object):
         resultObjects = []
         statisticsBuffer = []
 
+        if self.statisticsInCycles:
+            tickMethod = tickCycles
+        else:
+            tickMethod = tickSeconds
+
         nextTick = time.time()
         while ticksPerDay > 0:
-            resultObjects.append(self.threadPool.map_async(tick, self.queries, 1))
+            resultObjects.append(self.threadPool.map_async(tickMethod, self.queries, 1))
 
             ticksPerDay -= 1
             nextTick += TICK_MS
@@ -261,6 +281,7 @@ class Workload(Object):
                 time.sleep(nextTick - time.time())
             except IOError:
                 time.sleep(TICK_MS)
+                nextTick += TICK_MS
                 print "Timer exception"
 
         for resultObject in resultObjects:
@@ -487,10 +508,10 @@ class Workload(Object):
 
 
     def run(self):
-        bestTotalConfiguration = {'time': sys.float_info.max, 'configuration': [], 'total': []}
-        bestBeginningConfiguration = {'time': sys.float_info.max, 'configuration': [], 'total': []}
-
         if self.findBestIndexConfiguration:
+            bestTotalConfiguration = {'time': sys.float_info.max, 'configuration': [], 'total': []}
+            bestBeginningConfiguration = {'time': sys.float_info.max, 'configuration': [], 'total': []}
+
             for indexConfiguration in self.indexConfigurations:
                 self.createIndexesForConfiguration(indexConfiguration)
 
@@ -550,5 +571,5 @@ else:
     with open(workloadConfigFile) as workloadFile:
             workloadConfig = json.load(workloadFile)
 
-    w = Workload(workloadConfig['days'], workloadConfig['secondsPerDay'], workloadConfig['queryClasses'], workloadConfig['queryClassDistributions'], workloadConfig['periodicQueryClasses'], workloadConfig['verbose'], workloadConfig['compressed'], workloadConfig['calculateOverallStatistics'], workloadConfig['indexOptimization'], workloadConfig['findBestIndexConfiguration'], workloadConfig['availableBudget'], tableDirectory)
+    w = Workload(workloadConfig['days'], workloadConfig['secondsPerDay'], workloadConfig['queryClasses'], workloadConfig['queryClassDistributions'], workloadConfig['periodicQueryClasses'], workloadConfig['verbose'], workloadConfig['compressed'], workloadConfig['calculateOverallStatistics'], workloadConfig['statisticsInCycles'], workloadConfig['indexOptimization'], workloadConfig['findBestIndexConfiguration'], workloadConfig['availableBudget'], tableDirectory)
     w.run()

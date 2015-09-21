@@ -4,6 +4,7 @@
     "verbose": true,
     "compressed": true,
     "calculateOverallStatistics": false,
+    "statisticsInCycles": false,
     "indexOptimization": false,
     "findBestIndexConfiguration": false,
     "availableBudget": 56239088,

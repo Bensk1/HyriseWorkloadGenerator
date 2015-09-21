@@ -9,7 +9,7 @@ The workload generator is also capable of finding the best index configuration f
 
 #### Workload configuration
 
-A configuration consists of the following attributes, all of them are mandatory: days, secondsPerDay, verbose, compressed, calculateOverallStatistics, indexOptimization, queryClasses, queryClassDistributions, periodicQueryClasses.
+A configuration consists of the following attributes, all of them are mandatory: days, secondsPerDay, verbose, compressed, calculateOverallStatistics, statisticsInCycles, indexOptimization, findBestIndexConfiguration, availableBudget, queryClasses, queryClassDistributions, periodicQueryClasses.
 
 - **days** (*int*) : days the generator is going to simulate
 - **secondsPerDay** (*int*) : how long should the simulation of one of these days take
@@ -17,6 +17,7 @@ A configuration consists of the following attributes, all of them are mandatory:
 - **compressed** (*bool*) : decreases size of the json queries significantly. Deactivate for debuggin!
 - **verbose** (*bool*) : prints additional information during simulation
 - **calculateOverallStatistics** (*bool*) : calculate statistics for all workloads aggregated
+- **statisticsInCycles** (*bool*): calculate statistics in cycles,
 - **indexOptimization** (*bool*) : whether to trigger index optimization or not
 - **findBestIndexConfiguration** (*bool*) : whether to try all possible, but memory budget conforming, index configurations and find the best performing one. **Careful, this setting overwrites indexOptimization. There will of course be no indexOptimization if the generator tries to find the best performing index configuration**
 - **availableBudget** (*int*): the memory budget in bytes which is used to find the best performing index
