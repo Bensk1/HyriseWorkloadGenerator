@@ -73,9 +73,19 @@
             "distribution": [0.2, 0.3, 0.1, 0.3, 0.0, 0.1, 0.0]
         },
         {
+            "description": "Initial Distribution2",
+            "validFromDay": 4,
+            "distribution": [0.2, 0.2, 0.2, 0.3, 0.0, 0.1, 0.0]
+        },
+        {
             "description": "Second Distribution",
             "validFromDay": 6,
             "distribution": [0.2, 0.1, 0.3, 0.3, 0.0, 0.1, 0.0]
+        },
+        {
+            "description": "Second Distribution2",
+            "validFromDay": 9,
+            "distribution": [0.2, 0.2, 0.2, 0.3, 0.0, 0.1, 0.0]
         },
         {
             "description": "Third Distribution",
@@ -84,38 +94,28 @@
         },
         {
             "description": "Third Distribution2",
-            "validFromDay": 12,
-            "distribution": [0.2, 0.3, 0.1, 0.25, 0.05, 0.1, 0.0]
-        },
-        {
-            "description": "Third Distribution3",
             "validFromDay": 13,
             "distribution": [0.2, 0.3, 0.1, 0.20, 0.1, 0.05, 0.05]
         },
         {
-            "description": "Third Distribution4",
-            "validFromDay": 14,
-            "distribution": [0.2, 0.3, 0.1, 0.15, 0.15, 0.0, 0.1]
-        },
-        {
-            "description": "Third Distribution5",
+            "description": "Third Distribution3",
             "validFromDay": 15,
-            "distribution": [0.2, 0.3, 0.1, 0.1, 0.2, 0.0, 0.1]
+            "distribution": [0.2, 0.2, 0.2, 0.1, 0.2, 0.0, 0.1]
         },
         {
             "description": "Fourth Distribution",
-            "validFromDay": 16,
-            "distribution": [0.2, 0.3, 0.1, 0.0, 0.3, 0.0, 0.1]
+            "validFromDay": 17,
+            "distribution": [0.2, 0.1, 0.3, 0.0, 0.3, 0.0, 0.1]
         },
         {
             "description": "Fifth Distribution",
             "validFromDay": 21,
-            "distribution": [0.2, 0.1, 0.3, 0.0, 0.3, 0.0, 0.1]
+            "distribution": [0.2, 0.3, 0.1, 0.0, 0.3, 0.0, 0.1]
         },
         {
             "description": "Sixth Distribution",
             "validFromDay": 26,
-            "distribution": [0.2, 0.3, 0.1, 0.0, 0.3, 0.0, 0.1]
+            "distribution": [0.2, 0.1, 0.3, 0.0, 0.3, 0.0, 0.1]
         }
     ],
     "periodicQueryClasses": [
