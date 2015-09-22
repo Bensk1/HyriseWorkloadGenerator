@@ -1,6 +1,5 @@
 from random import randint
 from random import choice
-from random import seed
 import string
 import os
 
@@ -18,8 +17,6 @@ class Table:
         self.checkAndCreatePath(path)
         self.outputFile = open("%s/%s.tbl" % (path, self.name), "w")
         self.metaDataFile = metaDataFile
-
-        seed(1238585430324)
 
     def checkAndCreatePath(self, path):
         if not os.path.exists(path):
