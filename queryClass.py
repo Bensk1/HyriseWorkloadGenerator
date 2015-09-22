@@ -31,6 +31,7 @@ class QueryClass:
         self.datatypes = []
         self.statistics = [[] for i in range(days)]
         self.period = 0
+        self.periodDays = []
         self.activeToday = True
 
         self.checkAndCreateQueryFolder()
@@ -39,7 +40,6 @@ class QueryClass:
 
     def reset(self):
         self.statistics = [[] for i in range(len(self.statistics))]
-        self.period = 0
         self.activeToday = True
 
     def parseValues(self, values):

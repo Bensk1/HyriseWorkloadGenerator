@@ -55,9 +55,11 @@ QueryClassDistributions are specifying the amounts of queries sent of a specific
 
 #### PeriodicQueryClass
 
-PeriodicQueryClasses are not executed every day, but only periodically. Therefore it adds a single mandatory attribute to the QueryClass:
+PeriodicQueryClasses are not executed every day, but only periodically. Therefore it adds three mandatory attributes to the QueryClass:
 
 - **period** (*int*): the QueryClass is executed every n-th day
+- **duration** (*int*): number of days the QueryClass keeps running
+- **start** (*int*): starting day for periodic QueryClass
 
 **Usage**:
 python workload.py workload.json tableDirectory [outputFile]
