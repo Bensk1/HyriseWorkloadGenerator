@@ -187,13 +187,17 @@ class Workload(Object):
 
     def parseQueryClasses(self, queryClasses, compressed, tableDirectory):
         queryClassesParsed = []
-        periods = []
 
         for queryClass in queryClasses:
             queryClassesParsed.append(QueryClass(queryClass['description'], queryClass['table'], queryClass['columns'], queryClass['predicateTypes'], queryClass['compoundExpressions'], queryClass['values'], compressed, tableDirectory, self.days))
             if 'period' in queryClass:
                 queryClassesParsed[-1].period = queryClass['period']
-                periods.append(queryClass['period'])
+                i = queryClass['start']
+                while i < self.days:
+                    for day in range(queryClass['duration']):
+                        queryClassesParsed[-1].periodDays.append(i + day)
+
+                    i += queryClassesParsed[-1].period
 
         return queryClassesParsed
 
@@ -228,7 +232,7 @@ class Workload(Object):
         executingPeriodicQueriesToday = False
 
         for periodicQueryClass in self.periodicQueryClasses:
-            if self.currentDay % periodicQueryClass.period == 0:
+            if self.currentDay in periodicQueryClass.periodDays:
                 executingPeriodicQueriesToday = True
                 periodicQueryClass.activeToday = True
 

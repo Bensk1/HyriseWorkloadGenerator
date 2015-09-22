@@ -125,7 +125,9 @@
             "columns": [0],
             "compoundExpressions": [],
             "values": "auto",
-            "period": 4
+            "period": 3,
+            "duration": 2,
+            "start": 3
         }
     ]
 }
