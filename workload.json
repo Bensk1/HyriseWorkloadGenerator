@@ -1,6 +1,6 @@
 {
-    "days": 30,
-    "secondsPerDay": 4,
+    "days": 35,
+    "secondsPerDay": 3,
     "verbose": true,
     "compressed": true,
     "calculateOverallStatistics": true,
@@ -14,36 +14,12 @@
             "table": "customer",
             "columns": [0],
             "compoundExpressions": [],
-            "predicateTypes": ["GT"],
-            "values": [477245]
-        },
-        {
-            "description": "Order",
-            "table": "order",
-            "columns": [0],
-            "compoundExpressions": [],
-            "predicateTypes": ["LT"],
-            "values": [178225]
-        },
-        {
-            "description": "Supplier",
-            "table": "supplier",
-            "columns": [0],
-            "compoundExpressions": [],
-            "predicateTypes": ["GT"],
-            "values": [2142505]
-        },
-        {
-            "description": "Item",
-            "table": "item",
-            "columns": [0],
-            "compoundExpressions": [],
             "predicateTypes": ["EQ"],
             "values": "auto"
         },
         {
-            "description": "Invoice",
-            "table": "invoice",
+            "description": "Order",
+            "table": "order",
             "columns": [0],
             "compoundExpressions": [],
             "predicateTypes": ["EQ"],
@@ -54,52 +30,7 @@
         {
             "description": "Initial Distribution",
             "validFromDay": 1,
-            "distribution": [0.2, 0.3, 0.1, 0.3, 0.0]
-        },
-        {
-            "description": "Initial Distribution2",
-            "validFromDay": 4,
-            "distribution": [0.2, 0.2, 0.2, 0.3, 0.0]
-        },
-        {
-            "description": "Second Distribution",
-            "validFromDay": 6,
-            "distribution": [0.2, 0.1, 0.3, 0.3, 0.0]
-        },
-        {
-            "description": "Second Distribution2",
-            "validFromDay": 9,
-            "distribution": [0.2, 0.2, 0.2, 0.3, 0.0]
-        },
-        {
-            "description": "Third Distribution",
-            "validFromDay": 11,
-            "distribution": [0.2, 0.3, 0.1, 0.3, 0.0]
-        },
-        {
-            "description": "Third Distribution2",
-            "validFromDay": 13,
-            "distribution": [0.2, 0.3, 0.1, 0.20, 0.1]
-        },
-        {
-            "description": "Third Distribution3",
-            "validFromDay": 15,
-            "distribution": [0.2, 0.2, 0.2, 0.1, 0.2]
-        },
-        {
-            "description": "Fourth Distribution",
-            "validFromDay": 17,
-            "distribution": [0.2, 0.1, 0.3, 0.0, 0.3]
-        },
-        {
-            "description": "Fifth Distribution",
-            "validFromDay": 21,
-            "distribution": [0.2, 0.3, 0.1, 0.0, 0.3]
-        },
-        {
-            "description": "Sixth Distribution",
-            "validFromDay": 26,
-            "distribution": [0.2, 0.1, 0.3, 0.0, 0.3]
+            "distribution": [0.9, 0.1]
         }
     ],
     "periodicQueryClasses": [

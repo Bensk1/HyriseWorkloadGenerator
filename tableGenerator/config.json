@@ -1,50 +1,26 @@
 [
     {
         "name": "customer",
-        "rows": 15000,
-        "columns": 5,
+        "rows": 750000,
+        "columns": 4,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": [15000, 15000, 1500, 150, 15]
+        "uniqueValues": [750000, 15000, 1500, 150]
     },
     {
         "name": "order",
-        "rows": 1500000,
-        "columns": 5,
+        "rows": 750000,
+        "columns": 4,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": [1500000, 1500000, 150000, 15000, 1500]
-    },
-    {
-        "name": "supplier",
-        "rows": 1500000,
-        "columns": 5,
-        "stringsForEachInt": 4,
-        "stringLength": [6, 8],
-        "uniqueValues": [1500000, 1500000, 150000, 15000, 1500]
-    },
-    {
-        "name": "item",
-        "rows": 3000000,
-        "columns": 5,
-        "stringsForEachInt": 9,
-        "stringLength": [6, 8],
-        "uniqueValues": [3000000, 3000000, 300000, 30000, 3000]
-    },
-    {
-        "name": "invoice",
-        "rows": 3000000,
-        "columns": 5,
-        "stringsForEachInt": 5,
-        "stringLength": [6, 8],
-        "uniqueValues": [3000000, 3000000, 300000, 30000, 3000]
+        "uniqueValues": [750000, 15000, 1500, 150]
     },
     {
         "name": "warehouse",
-        "rows": 500000,
-        "columns": 5,
-        "stringsForEachInt": 5,
+        "rows": 1500000,
+        "columns": 4,
+        "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": [500000, 500000, 50000, 50000, 500]
+        "uniqueValues": [1500000, 15000, 1500, 150]
     }
 ]
