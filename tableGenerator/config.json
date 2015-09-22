@@ -38,5 +38,13 @@
         "stringsForEachInt": 5,
         "stringLength": [6, 8],
         "uniqueValues": [3000000, 3000000, 300000, 30000, 3000]
+    },
+    {
+        "name": "warehouse",
+        "rows": 500000,
+        "columns": 5,
+        "stringsForEachInt": 5,
+        "stringLength": [6, 8],
+        "uniqueValues": [500000, 500000, 50000, 50000, 500]
     }
 ]

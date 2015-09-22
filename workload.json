@@ -1,13 +1,13 @@
 {
     "days": 30,
     "secondsPerDay": 4,
-    "verbose": false,
+    "verbose": true,
     "compressed": true,
     "calculateOverallStatistics": true,
     "statisticsInCycles": false,
     "indexOptimization": true,
     "findBestIndexConfiguration": false,
-    "availableBudget": 58000000,
+    "availableBudget": 67000000,
     "queryClasses": [
         {
             "description": "Customer",
@@ -15,7 +15,7 @@
             "columns": [0],
             "compoundExpressions": [],
             "predicateTypes": ["GT"],
-            "values": [785958]
+            "values": [477245]
         },
         {
             "description": "Order",
@@ -23,7 +23,7 @@
             "columns": [0],
             "compoundExpressions": [],
             "predicateTypes": ["LT"],
-            "values": [57622]
+            "values": [178225]
         },
         {
             "description": "Supplier",
@@ -31,7 +31,7 @@
             "columns": [0],
             "compoundExpressions": [],
             "predicateTypes": ["GT"],
-            "values": [2397378]
+            "values": [2142505]
         },
         {
             "description": "Item",
@@ -48,76 +48,71 @@
             "compoundExpressions": [],
             "predicateTypes": ["EQ"],
             "values": "auto"
-        },
-        {
-            "description": "Item2",
-            "table": "item",
-            "columns": [0],
-            "compoundExpressions": [],
-            "predicateTypes": ["EQ"],
-            "values": "auto"
-        },
-        {
-            "description": "Invoice2",
-            "table": "invoice",
-            "columns": [0],
-            "compoundExpressions": [],
-            "predicateTypes": ["EQ"],
-            "values": "auto"
         }
     ],
     "queryClassDistributions": [
         {
             "description": "Initial Distribution",
             "validFromDay": 1,
-            "distribution": [0.2, 0.3, 0.1, 0.3, 0.0, 0.1, 0.0]
+            "distribution": [0.2, 0.3, 0.1, 0.3, 0.0]
         },
         {
             "description": "Initial Distribution2",
             "validFromDay": 4,
-            "distribution": [0.2, 0.2, 0.2, 0.3, 0.0, 0.1, 0.0]
+            "distribution": [0.2, 0.2, 0.2, 0.3, 0.0]
         },
         {
             "description": "Second Distribution",
             "validFromDay": 6,
-            "distribution": [0.2, 0.1, 0.3, 0.3, 0.0, 0.1, 0.0]
+            "distribution": [0.2, 0.1, 0.3, 0.3, 0.0]
         },
         {
             "description": "Second Distribution2",
             "validFromDay": 9,
-            "distribution": [0.2, 0.2, 0.2, 0.3, 0.0, 0.1, 0.0]
+            "distribution": [0.2, 0.2, 0.2, 0.3, 0.0]
         },
         {
             "description": "Third Distribution",
             "validFromDay": 11,
-            "distribution": [0.2, 0.3, 0.1, 0.3, 0.0, 0.1, 0.0]
+            "distribution": [0.2, 0.3, 0.1, 0.3, 0.0]
         },
         {
             "description": "Third Distribution2",
             "validFromDay": 13,
-            "distribution": [0.2, 0.3, 0.1, 0.20, 0.1, 0.05, 0.05]
+            "distribution": [0.2, 0.3, 0.1, 0.20, 0.1]
         },
         {
             "description": "Third Distribution3",
             "validFromDay": 15,
-            "distribution": [0.2, 0.2, 0.2, 0.1, 0.2, 0.0, 0.1]
+            "distribution": [0.2, 0.2, 0.2, 0.1, 0.2]
         },
         {
             "description": "Fourth Distribution",
             "validFromDay": 17,
-            "distribution": [0.2, 0.1, 0.3, 0.0, 0.3, 0.0, 0.1]
+            "distribution": [0.2, 0.1, 0.3, 0.0, 0.3]
         },
         {
             "description": "Fifth Distribution",
             "validFromDay": 21,
-            "distribution": [0.2, 0.3, 0.1, 0.0, 0.3, 0.0, 0.1]
+            "distribution": [0.2, 0.3, 0.1, 0.0, 0.3]
         },
         {
             "description": "Sixth Distribution",
             "validFromDay": 26,
-            "distribution": [0.2, 0.1, 0.3, 0.0, 0.3, 0.0, 0.1]
+            "distribution": [0.2, 0.1, 0.3, 0.0, 0.3]
         }
     ],
     "periodicQueryClasses": [
+        {
+            "description": "Warehouse Consolidation",
+            "table": "warehouse",
+            "columns": [0],
+            "compoundExpressions": [],
+            "predicateTypes": ["EQ"],
+            "values": "auto",
+            "period": 7,
+            "duration": 3,
+            "start": 5
+        }
     ]
 }
