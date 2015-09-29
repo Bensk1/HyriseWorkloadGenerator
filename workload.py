@@ -109,7 +109,7 @@ class Workload(Object):
             tableColumn = "%s" % (queryClass.table)
 
             for column in queryClass.columns:
-                tableColumn += "_%s" % (column)
+                tableColumn += "__%s" % (column)
 
             tableColumns.append(tableColumn)
 
@@ -393,8 +393,8 @@ class Workload(Object):
         return dropIndexRequest
 
     def buildDropAndCreateIndexRequest(self, tableColumn):
-        table = tableColumn.split('_')[0]
-        column = tableColumn.split('_')[1]
+        table = tableColumn.split('__')[0]
+        column = tableColumn.split('__')[1]
 
         dropAndCreateIndexRequest = {'query': '{\
             "operators": {\
