@@ -12,7 +12,7 @@ from multiprocessing import Pool
 from queryClass import QueryClass
 from queryClassDistribution import QueryClassDistribution
 
-TICK_MS = 0.2
+TICK_MS = 0.05
 QUERIES_PER_TICK = 20
 DISTRIBUTION_DIVISOR = 100 / QUERIES_PER_TICK
 PERIODIC_QUERIES_PER_TICK = 4
