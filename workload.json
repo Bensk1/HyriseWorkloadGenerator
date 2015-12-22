@@ -1,5 +1,5 @@
 {
-    "days": 35,
+    "days": 77,
     "secondsPerDay": 3,
     "verbose": true,
     "compressed": true,
@@ -7,10 +7,10 @@
     "statisticsInCycles": false,
     "indexOptimization": true,
     "findBestIndexConfiguration": false,
-    "availableBudget": 67000000,
+    "availableBudget": 80000000,
     "queryClasses": [
         {
-            "description": "Customer",
+            "description": "Order Analytics",
             "table": "customer",
             "columns": [0],
             "compoundExpressions": [],
@@ -18,8 +18,16 @@
             "values": "auto"
         },
         {
-            "description": "Order",
+            "description": "Customer Relation",
             "table": "order",
+            "columns": [0],
+            "compoundExpressions": [],
+            "predicateTypes": ["EQ"],
+            "values": "auto"
+        },
+        {
+            "description": "Shipment",
+            "table": "item",
             "columns": [0],
             "compoundExpressions": [],
             "predicateTypes": ["EQ"],
@@ -30,7 +38,37 @@
         {
             "description": "Initial Distribution",
             "validFromDay": 1,
-            "distribution": [0.9, 0.1]
+            "distribution": [0.9, 0.1, 0.0]
+        },
+        {
+            "description": "Initial Distribution",
+            "validFromDay": 15,
+            "distribution": [0.3, 0.1, 0.6]
+        },
+        {
+            "description": "Initial Distribution",
+            "validFromDay": 18,
+            "distribution": [0.9, 0.1, 0.0]
+        },
+        {
+            "description": "Initial Distribution",
+            "validFromDay": 43,
+            "distribution": [0.3, 0.1, 0.6]
+        },
+        {
+            "description": "Initial Distribution",
+            "validFromDay": 46,
+            "distribution": [0.9, 0.1, 0.0]
+        },
+        {
+            "description": "Initial Distribution",
+            "validFromDay": 71,
+            "distribution": [0.3, 0.1, 0.6]
+        },
+        {
+            "description": "Initial Distribution",
+            "validFromDay": 74,
+            "distribution": [0.9, 0.1, 0.0]
         }
     ],
     "periodicQueryClasses": [

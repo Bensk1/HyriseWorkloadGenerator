@@ -1,26 +1,34 @@
 [
     {
         "name": "customer",
-        "rows": 750000,
-        "columns": 4,
+        "rows": 2000000,
+        "columns": 1,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": [750000, 15000, 1500, 150]
+        "uniqueValues": [2000000]
     },
     {
         "name": "order",
-        "rows": 750000,
-        "columns": 4,
+        "rows": 2000000,
+        "columns": 1,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": [750000, 15000, 1500, 150]
+        "uniqueValues": [2000000]
     },
     {
         "name": "warehouse",
-        "rows": 1500000,
-        "columns": 4,
+        "rows": 4000000,
+        "columns": 1,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": [1500000, 15000, 1500, 150]
+        "uniqueValues": [4000000]
+    },
+    {
+        "name": "item",
+        "rows": 5000000,
+        "columns": 1,
+        "stringsForEachInt": 9,
+        "stringLength": [6, 8],
+        "uniqueValues": [5000000]
     }
 ]
