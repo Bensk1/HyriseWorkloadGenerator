@@ -7,7 +7,7 @@
     "statisticsInCycles": false,
     "indexOptimization": true,
     "findBestIndexConfiguration": false,
-    "availableBudget": 80000000,
+    "availableBudget": 115000000,
     "queryClasses": [
         {
             "description": "Order Analytics",
