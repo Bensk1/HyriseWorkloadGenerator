@@ -1,11 +1,11 @@
 {
     "days": 90,
-    "secondsPerDay": 1.5,
+    "secondsPerDay": 3,
     "verbose": true,
     "compressed": true,
     "calculateOverallStatistics": true,
     "statisticsInCycles": false,
-    "indexOptimization": true,
+    "indexOptimization": false,
     "findBestIndexConfiguration": false,
     "availableBudget": 80000000,
     "queryClasses": [
@@ -26,7 +26,7 @@
             "values": "auto"
         },
         {
-            "description": "Supply",
+            "description": "Supply Handling",
             "table": "item",
             "columns": [0],
             "compoundExpressions": [],
