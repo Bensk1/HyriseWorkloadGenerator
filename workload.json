@@ -1,6 +1,6 @@
 {
-    "days": 77,
-    "secondsPerDay": 3,
+    "days": 90,
+    "secondsPerDay": 1.5,
     "verbose": true,
     "compressed": true,
     "calculateOverallStatistics": true,
@@ -26,7 +26,7 @@
             "values": "auto"
         },
         {
-            "description": "Shipment",
+            "description": "Supply",
             "table": "item",
             "columns": [0],
             "compoundExpressions": [],
@@ -38,50 +38,54 @@
         {
             "description": "Initial Distribution",
             "validFromDay": 1,
-            "distribution": [0.9, 0.1, 0.0]
+            "distribution": [0.2, 0.2, 0.0]
         },
         {
             "description": "Initial Distribution",
-            "validFromDay": 15,
-            "distribution": [0.3, 0.1, 0.6]
+            "validFromDay": 10,
+            "distribution": [0.2, 0.2, 0.5]
         },
         {
             "description": "Initial Distribution",
-            "validFromDay": 18,
-            "distribution": [0.9, 0.1, 0.0]
+            "validFromDay": 16,
+            "distribution": [0.2, 0.2, 0.0]
         },
         {
             "description": "Initial Distribution",
-            "validFromDay": 43,
-            "distribution": [0.3, 0.1, 0.6]
+            "validFromDay": 30,
+            "distribution": [0.2, 0.2, 0.6]
         },
         {
             "description": "Initial Distribution",
-            "validFromDay": 46,
-            "distribution": [0.9, 0.1, 0.0]
+            "validFromDay": 39,
+            "distribution": [0.2, 0.2, 0.0]
         },
         {
             "description": "Initial Distribution",
-            "validFromDay": 71,
-            "distribution": [0.3, 0.1, 0.6]
+            "validFromDay": 45,
+            "distribution": [0.2, 0.2, 0.45]
         },
         {
             "description": "Initial Distribution",
-            "validFromDay": 74,
-            "distribution": [0.9, 0.1, 0.0]
+            "validFromDay": 52,
+            "distribution": [0.2, 0.2, 0.0]
+        },
+        {
+            "description": "Initial Distribution",
+            "validFromDay": 64,
+            "distribution": [0.2, 0.2, 0.6]
+        },
+        {
+            "description": "Initial Distribution",
+            "validFromDay": 66,
+            "distribution": [0.2, 0.2, 0.0]
+        },
+        {
+            "description": "Initial Distribution",
+            "validFromDay": 85,
+            "distribution": [0.2, 0.2, 0.5]
         }
     ],
     "periodicQueryClasses": [
-        {
-            "description": "Warehouse Consolidation",
-            "table": "warehouse",
-            "columns": [0],
-            "compoundExpressions": [],
-            "predicateTypes": ["EQ"],
-            "values": "auto",
-            "period": 7,
-            "duration": 3,
-            "start": 5
-        }
     ]
 }
