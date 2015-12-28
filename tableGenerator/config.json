@@ -17,18 +17,18 @@
     },
     {
         "name": "warehouse",
-        "rows": 4000000,
+        "rows": 7000000,
         "columns": 1,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": [4000000]
+        "uniqueValues": [7000000]
     },
     {
         "name": "item",
-        "rows": 5000000,
+        "rows": 11000000,
         "columns": 1,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": [5000000]
+        "uniqueValues": [11000000]
     }
 ]
