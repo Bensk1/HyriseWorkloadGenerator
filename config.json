@@ -1,0 +1,96 @@
+{
+    "compressedQueries": false,
+    "smallQueriesAttributes": 3,
+    "mediumQueriesAttributes": 5,
+    "largeQueriesAttributes": 9,
+    "smallQueriesCompoundExpression": [
+        {
+            "name": "0and1",
+            "type": "and",
+            "l": 0,
+            "r": 1
+        },
+        {
+            "name": "0and1and2",
+            "type": "and",
+            "l": "0and1",
+            "r": 2
+        }
+    ],
+    "mediumQueriesCompoundExpression": [
+        {
+            "name": "0and1",
+            "type": "and",
+            "l": 0,
+            "r": 1
+        },
+        {
+            "name": "2and3",
+            "type": "and",
+            "l": 2,
+            "r": 3
+        },
+        {
+            "name": "0and1and4",
+            "type": "and",
+            "l": "0and1",
+            "r": 4
+        },
+        {
+            "name": "0and1and4and2and3",
+            "type": "and",
+            "l": "0and1and4",
+            "r": "2and3"
+        }
+    ],
+    "largeQueriesCompoundExpression": [
+        {
+            "name": "0and1",
+            "type": "and",
+            "l": 0,
+            "r": 1
+        },
+        {
+            "name": "2and3",
+            "type": "and",
+            "l": 2,
+            "r": 3
+        },
+        {
+            "name": "4and5",
+            "type": "and",
+            "l": 4,
+            "r": 5
+        },
+        {
+            "name": "6and7",
+            "type": "and",
+            "l": 6,
+            "r": 7
+        },
+        {
+            "name": "0and1and8",
+            "type": "and",
+            "l": "0and1",
+            "r": 8
+        },
+        {
+            "name": "2and3and4and5",
+            "type": "and",
+            "l": "2and3",
+            "r": "4and5"
+        },
+        {
+            "name": "0and1and8and6and7",
+            "type": "and",
+            "l": "0and1and8",
+            "r": "6and7"
+        },
+        {
+            "name": "0and1and8and6and7and2and3and4and5",
+            "type": "and",
+            "l": "0and1and8and6and7",
+            "r": "2and3and4and5"
+        }
+    ]
+}
