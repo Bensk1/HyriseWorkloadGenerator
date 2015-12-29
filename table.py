@@ -17,7 +17,7 @@ class Table:
         self.values = self.getRandomValues()
 
         # Three queries with configurable size
-        self.queries = self.generateQueries()
+        self.generateQueries()
         self.randomQueries = self.generateRandomQueries()
 
     def determineDatatypes(self):
@@ -93,13 +93,9 @@ class Table:
 
 
     def generateQueries(self):
-        queries = []
-
-        queries.append(self.generateSmallQuery())
-        queries.append(self.generateMediumQuery())
-        queries.append(self.generateLargeQuery())
-
-        return queries
+        self.smallQuery = self.generateSmallQuery()
+        self.mediumQuery = self.generateMediumQuery()
+        self.largeQuery = self.generateLargeQuery()
 
     def generateQuery(self, numberOfAttributes, compoundExpressions):
         columnObjects = []

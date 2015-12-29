@@ -1,7 +1,7 @@
 import config
 import sys
 
-from random import randint, seed, uniform
+from random import randint, seed, shuffle, uniform
 from table import Table
 from tableLoader import TableLoader
 
@@ -24,12 +24,12 @@ class Runner:
         for tableName in self.tableLoader.getTableNames():
             self.tables.append(Table(self.tableDirectory, tableName))
 
-    def boostTableShares(self, tableShares):
+    def boostTableShares(self, tableShares, usualQueries):
         if self.currentDay % 90 == 1:
             self.determineBoostTables()
 
         for boostIndex, value in zip(self.boostTables, config.config["boostValues"]):
-            tableShares[boostIndex] = int(tableShares[boostIndex] * value)
+            tableShares[boostIndex] = int(tableShares[boostIndex] + value * usualQueries)
 
     def calculateDay(self):
         queriesToday = self.noiseNumberOfQueries(QUERIES_PER_DAY)
@@ -39,9 +39,12 @@ class Runner:
         tableShares = [usualQueries * SHARED_USUAL_QUERIES / len(self.tables)] * len(self.tables)
         tableShares = self.noiseTableShares(tableShares)
 
-        self.boostTableShares(tableShares)
+        self.boostTableShares(tableShares, usualQueries)
 
-        print tableShares
+        print reduce(lambda x,y: x + y, tableShares)
+
+        queries = self.prepareQueries(tableShares)
+
         self.currentDay += 1
 
     def determineBoostTables(self):
@@ -65,6 +68,14 @@ class Runner:
         tableShares = map(lambda tableShare, multiplier: int(tableShare * (1 + multiplier)), tableShares, multipliers[:len(tableShares)])
         return tableShares
 
+    def prepareQueries(self, tableShares):
+        queries = []
+        for tableShare, table in zip(tableShares, self.tables):
+            queries += [table.smallQuery] * (int(tableShare * config.config["queryShare"][0]))
+            queries += [table.mediumQuery] * (int(tableShare * config.config["queryShare"][1]))
+            queries += [table.largeQuery] * (int(tableShare * config.config["queryShare"][2]))
+
+        return queries
 
 # For testing purposes, uncomment for random tables
 seed(1238585430324)
