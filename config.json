@@ -1,8 +1,11 @@
 {
     "compressedQueries": false,
+    "numberOfColumns": 10,
+    "randomQueriesPerTable": 5,
     "smallQueriesAttributes": 3,
     "mediumQueriesAttributes": 5,
     "largeQueriesAttributes": 9,
+    "randomQueriesAttributes": 7,
     "smallQueriesCompoundExpression": [
         {
             "name": "0and1",

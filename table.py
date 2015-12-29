@@ -3,7 +3,7 @@ import linecache
 
 from column import Column
 from jinja2 import Template
-from random import randint
+from random import randint, shuffle
 from subprocess import Popen, PIPE
 
 TABLE_HEADER_SIZE = 4
@@ -18,9 +18,7 @@ class Table:
 
         # Three queries with configurable size
         self.queries = self.generateQueries()
-        self.randomQueries = []
-
-        print self.queries
+        self.randomQueries = self.generateRandomQueries()
 
     def determineDatatypes(self):
         tableFile = "%s/%s.tbl" % (self.directory, self.name)
@@ -31,6 +29,72 @@ class Table:
         datatypes[-1] = datatypes[-1].split('\n')[0]
 
         return datatypes
+
+    def generateRandomQuery(self):
+        columns = self.getRandomColumnSelection()
+        compoundExpressions = self.parseCompoundExpressions(self.generateRandomQueryCompoundExpressions(columns))
+        columnObjects = []
+
+        for column in columns:
+            columnObjects.append(Column(column, "EQ", self.values[column], self.datatypes[column]))
+
+        queryTemplateFile = "queryTemplateCompressed.json" if config.config["compressedQueries"] else "queryTemplate.json"
+        with open(queryTemplateFile) as queryTemplate:
+            template = Template(queryTemplate.read())
+            return template.render(columns = columnObjects, columnLen = len(columnObjects), table = self.name, compoundExpressions = compoundExpressions, compoundExpressionLen = len(compoundExpressions))
+
+    def generateRandomQueryCompoundExpressions(self, columns):
+        compoundExpressions = [{
+            "name": "0and1",
+            "type": "and",
+            "l": columns[0],
+            "r": columns[1]
+        },
+        {
+            "name": "2and3",
+            "type": "and",
+            "l": columns[2],
+            "r": columns[3]
+        },
+        {
+            "name": "4and5",
+            "type": "and",
+            "l": columns[4],
+            "r": columns[5]
+        },
+        {
+            "name": "0and1and6",
+            "type": "and",
+            "l": "0and1",
+            "r": columns[6]
+        },
+        {
+            "name": "2and3and4and5",
+            "type": "and",
+            "l": "2and3",
+            "r": "4and5"
+        },
+        {
+            "name": "0and1and6and2and3and4and5",
+            "type": "and",
+            "l": "0and1and6",
+            "r": "2and3and4and5"
+        }]
+
+        return compoundExpressions
+
+    def generateRandomQueries(self):
+        queries = []
+
+        for i in range(config.config["randomQueriesPerTable"]):
+            rq = self.generateRandomQuery()
+            queryFile = open("%i.json"%(i), 'w')
+            queryFile.write(rq)
+            queryFile.close()
+            # queries.append(self.generateRandomQuery())
+
+        return queries
+
 
     def generateQueries(self):
         queries = []
@@ -53,16 +117,26 @@ class Table:
             return template.render(columns = columnObjects, columnLen = len(columnObjects), table = self.name, compoundExpressions = compoundExpressions, compoundExpressionLen = len(compoundExpressions))
 
     def generateSmallQuery(self):
-        return self.generateQuery(config.config["smallQueriesAttributes"], config.config["smallQueriesCompoundExpression"])
+        compoundExpressions = self.parseCompoundExpressions(config.config["smallQueriesCompoundExpression"])
+
+        return self.generateQuery(config.config["smallQueriesAttributes"], compoundExpressions)
 
     def generateMediumQuery(self):
-        return self.generateQuery(config.config["mediumQueriesAttributes"], config.config["mediumQueriesCompoundExpression"])
+        compoundExpressions = self.parseCompoundExpressions(config.config["mediumQueriesCompoundExpression"])
+
+        return self.generateQuery(config.config["mediumQueriesAttributes"], compoundExpressions)
 
     def generateLargeQuery(self):
-        queryFile = open("asd.json", 'w')
-        queryFile.write(self.generateQuery(config.config["largeQueriesAttributes"], config.config["largeQueriesCompoundExpression"]))
-        queryFile.close()
-        return self.generateQuery(config.config["largeQueriesAttributes"], config.config["largeQueriesCompoundExpression"])
+        compoundExpressions = self.parseCompoundExpressions(config.config["largeQueriesCompoundExpression"])
+
+        return self.generateQuery(config.config["largeQueriesAttributes"], compoundExpressions)
+
+    def getRandomColumnSelection(self):
+        columns = range(config.config["numberOfColumns"])
+        shuffle(columns)
+
+        return columns[:config.config["randomQueriesAttributes"]]
+
 
     def getRandomValues(self):
         rows = self.getRowsInTable()
@@ -84,3 +158,19 @@ class Table:
 
         rows = int(output.split(' ')[0]) - TABLE_HEADER_SIZE
         return rows
+
+    def parseCompoundExpressions(self, compoundExpressions):
+        for compoundExpression in compoundExpressions:
+            compoundExpression['l'] = self.renameCompoundExpressionBranch(compoundExpression['l'])
+            compoundExpression['r'] = self.renameCompoundExpressionBranch(compoundExpression['r'])
+
+        return compoundExpressions
+
+    def renameCompoundExpressionBranch(self, compoundExpressionBranch):
+        if type(compoundExpressionBranch) is int:
+            if config.config["compressedQueries"]:
+                compoundExpressionBranch = "sC%i" % (compoundExpressionBranch)
+            else:
+                compoundExpressionBranch = "scanColumn%i" % (compoundExpressionBranch)
+
+        return compoundExpressionBranch

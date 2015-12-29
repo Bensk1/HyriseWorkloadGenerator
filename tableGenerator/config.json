@@ -2,7 +2,7 @@
     {
         "name": "customer",
         "rows": 10000,
-        "columns": 9,
+        "columns": 10,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
         "uniqueValues": 10000
@@ -10,7 +10,7 @@
     {
         "name": "order",
         "rows": 100000,
-        "columns": 9,
+        "columns": 10,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
         "uniqueValues": 100000
