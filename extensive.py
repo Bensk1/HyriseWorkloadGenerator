@@ -1,15 +1,15 @@
 import config
 import sys
 
+from querySender import QuerySender
 from random import randint, seed, shuffle, uniform
 from table import Table
 from tableLoader import TableLoader
 
 QUERIES_PER_DAY = 10000
 RANDOM_PERCENTAGE_PER_DAY = 0.05
-SHARED_USUAL_QUERIES = 0.6
 DAYS = 1
-NOISE_FACTOR = 0.01
+NOISE_FACTOR = 0.03
 
 
 class Runner:
@@ -17,33 +17,50 @@ class Runner:
     def __init__(self, tableDirectory):
         self.currentDay = 1
         self.tableDirectory = tableDirectory
+
         self.tableLoader = TableLoader(tableDirectory)
         self.tableLoader.loadTables()
+
+        self.querySender = QuerySender()
 
         self.tables = []
         for tableName in self.tableLoader.getTableNames():
             self.tables.append(Table(self.tableDirectory, tableName))
 
-    def boostTableShares(self, tableShares, usualQueries):
+    def addRandomQueries(self, numberOfQueries, queries):
+        for i in range(numberOfQueries):
+            randomTable = randint(0, len(self.tables) - 1)
+            randomQuery = randint(0, config.config["randomQueriesPerTable"] - 1)
+            queries.append(self.tables[randomTable].randomQueries[randomQuery])
+
+    def boostTableShares(self, tableShares, queriesToday):
         if self.currentDay % 90 == 1:
             self.determineBoostTables()
 
         for boostIndex, value in zip(self.boostTables, config.config["boostValues"]):
-            tableShares[boostIndex] = int(tableShares[boostIndex] + value * usualQueries)
+            tableShares[boostIndex] = int(tableShares[boostIndex] + value * queriesToday)
 
-    def calculateDay(self):
+    def prepareDay(self):
         queriesToday = self.noiseNumberOfQueries(QUERIES_PER_DAY)
         randomQueriesToday = int(queriesToday * RANDOM_PERCENTAGE_PER_DAY)
-        usualQueries = int(queriesToday - randomQueriesToday)
+        sharedUsualQueries = 1.0 - RANDOM_PERCENTAGE_PER_DAY - reduce(lambda x, y: x + y, config.config["boostValues"])
+        usualQueries = int(queriesToday * sharedUsualQueries)
 
-        tableShares = [usualQueries * SHARED_USUAL_QUERIES / len(self.tables)] * len(self.tables)
+        tableShares = [usualQueries / len(self.tables)] * len(self.tables)
         tableShares = self.noiseTableShares(tableShares)
-
-        self.boostTableShares(tableShares, usualQueries)
+        print reduce(lambda x,y: x + y, tableShares)
+        self.boostTableShares(tableShares, queriesToday)
 
         print reduce(lambda x,y: x + y, tableShares)
 
         queries = self.prepareQueries(tableShares)
+
+        self.addRandomQueries(randomQueriesToday, queries)
+        shuffle(queries)
+
+        print len(queries)
+
+        self.querySender.sendQueries(queries)
 
         self.currentDay += 1
 
@@ -83,4 +100,4 @@ seed(1238585430324)
 runner = Runner(sys.argv[1])
 
 for i in range(DAYS):
-    runner.calculateDay()
+    runner.prepareDay()
