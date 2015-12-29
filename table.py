@@ -41,7 +41,10 @@ class Table:
         queryTemplateFile = "queryTemplateCompressed.json" if config.config["compressedQueries"] else "queryTemplate.json"
         with open(queryTemplateFile) as queryTemplate:
             template = Template(queryTemplate.read())
-            return template.render(columns = columnObjects, columnLen = len(columnObjects), table = self.name, compoundExpressions = compoundExpressions, compoundExpressionLen = len(compoundExpressions))
+            query = {}
+            query['query'] = template.render(columns = columnObjects, columnLen = len(columnObjects), table = self.name, compoundExpressions = compoundExpressions, compoundExpressionLen = len(compoundExpressions))
+            query['performance'] = "true"
+            return query
 
     def generateRandomQueryCompoundExpressions(self, columns):
         compoundExpressions = [{
@@ -106,7 +109,10 @@ class Table:
         queryTemplateFile = "queryTemplateCompressed.json" if config.config["compressedQueries"] else "queryTemplate.json"
         with open(queryTemplateFile) as queryTemplate:
             template = Template(queryTemplate.read())
-            return template.render(columns = columnObjects, columnLen = len(columnObjects), table = self.name, compoundExpressions = compoundExpressions, compoundExpressionLen = len(compoundExpressions))
+            query = {}
+            query['query'] = template.render(columns = columnObjects, columnLen = len(columnObjects), table = self.name, compoundExpressions = compoundExpressions, compoundExpressionLen = len(compoundExpressions))
+            query['performance'] = "true"
+            return query
 
     def generateSmallQuery(self):
         compoundExpressions = self.parseCompoundExpressions(config.config["smallQueriesCompoundExpression"])

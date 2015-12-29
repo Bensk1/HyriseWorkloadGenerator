@@ -6,10 +6,11 @@ from random import randint, seed, shuffle, uniform
 from table import Table
 from tableLoader import TableLoader
 
-QUERIES_PER_DAY = 10000
+QUERIES_PER_DAY = 5000
 RANDOM_PERCENTAGE_PER_DAY = 0.05
 DAYS = 1
 NOISE_FACTOR = 0.03
+BOOST_PERIOD = 90
 
 
 class Runner:
@@ -34,7 +35,7 @@ class Runner:
             queries.append(self.tables[randomTable].randomQueries[randomQuery])
 
     def boostTableShares(self, tableShares, queriesToday):
-        if self.currentDay % 90 == 1:
+        if self.currentDay % BOOST_PERIOD == 1:
             self.determineBoostTables()
 
         for boostIndex, value in zip(self.boostTables, config.config["boostValues"]):
@@ -48,18 +49,16 @@ class Runner:
 
         tableShares = [usualQueries / len(self.tables)] * len(self.tables)
         tableShares = self.noiseTableShares(tableShares)
-        print reduce(lambda x,y: x + y, tableShares)
+        # print reduce(lambda x,y: x + y, tableShares)
         self.boostTableShares(tableShares, queriesToday)
 
-        print reduce(lambda x,y: x + y, tableShares)
+        # print reduce(lambda x,y: x + y, tableShares)
 
         queries = self.prepareQueries(tableShares)
 
         self.addRandomQueries(randomQueriesToday, queries)
         shuffle(queries)
-
         print len(queries)
-
         self.querySender.sendQueries(queries)
 
         self.currentDay += 1
