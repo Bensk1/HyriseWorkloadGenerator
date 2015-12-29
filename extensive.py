@@ -1,17 +1,19 @@
 import config
 import sys
 
-from random import uniform, seed
+from random import randint, seed, uniform
 from table import Table
 from tableLoader import TableLoader
 
-QUERIES_PER_DAY = 1000
+QUERIES_PER_DAY = 10000
 RANDOM_PERCENTAGE_PER_DAY = 0.05
+SHARED_USUAL_QUERIES = 0.6
 
 
 class Runner:
 
     def __init__(self, tableDirectory):
+        self.currentDay = 1
         self.tableDirectory = tableDirectory
         self.tableLoader = TableLoader(tableDirectory)
         self.tableLoader.loadTables()
@@ -20,18 +22,46 @@ class Runner:
         for tableName in self.tableLoader.getTableNames():
             self.tables.append(Table(self.tableDirectory, tableName))
 
-    def applyNoise(self, numberOfQueries):
+    def boostTableShares(self, tableShares):
+        if self.currentDay % 90 == 1:
+            self.determineBoostTables()
+
+        for boostIndex, value in zip(self.boostTables, config.config["boostValues"]):
+            tableShares[boostIndex] = int(tableShares[boostIndex] * value)
+
+
+    def determineBoostTables(self):
+        self.boostTables = []
+
+        for i in range(len(config.config["boostValues"])):
+            self.boostTables.append(randint(0, len(self.tables) - 1))
+
+    def calculateDay(self):
+        queriesToday = self.noiseNumberOfQueries(QUERIES_PER_DAY)
+        randomQueriesToday = int(queriesToday * RANDOM_PERCENTAGE_PER_DAY)
+        usualQueries = int(queriesToday - randomQueriesToday)
+
+        tableShares = [usualQueries * SHARED_USUAL_QUERIES / len(self.tables)] * len(self.tables)
+        tableShares = self.noiseTableShares(tableShares)
+
+        self.boostTableShares(tableShares)
+
+        self.currentDay += 1
+
+    def noiseNumberOfQueries(self, numberOfQueries):
         multiplier = uniform(-0.05, 0.05)
 
         return int(numberOfQueries * (1 + multiplier))
 
-    def calculateDay(self):
-        queriesToday = self.applyNoise(QUERIES_PER_DAY)
-        randomQueriesToday = int(queriesToday * RANDOM_PERCENTAGE_PER_DAY)
-        usualQueries = int(queriesToday - randomQueriesToday)
+    def noiseTableShares(self, tableShares):
+        multipliers = []
+        numberOfMultipliers = len(self.tables) / 2 if len(self.tables) % 2 == 0 else len(self.tables) / 2 + 1
+        for i in range(numberOfMultipliers):
+            multipliers.append(uniform(-0.05, 0.05))
+            multipliers.append(multipliers[-1] * -1)
 
-        print queriesToday, randomQueriesToday, usualQueries
-
+        tableShares = map(lambda tableShare, multiplier: int(tableShare * (1 + multiplier)), tableShares, multipliers[:len(tableShares)])
+        return tableShares
 
 
 # For testing purposes, uncomment for random tables

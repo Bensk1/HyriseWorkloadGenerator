@@ -6,6 +6,7 @@
     "mediumQueriesAttributes": 5,
     "largeQueriesAttributes": 9,
     "randomQueriesAttributes": 7,
+    "boostValues": [1.1, 1.06, 1.04, 1.03, 1.02],
     "smallQueriesCompoundExpression": [
         {
             "name": "0and1",

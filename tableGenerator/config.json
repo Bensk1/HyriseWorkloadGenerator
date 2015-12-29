@@ -14,5 +14,69 @@
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
         "uniqueValues": 100000
+    },
+    {
+        "name": "stuff",
+        "rows": 100000,
+        "columns": 10,
+        "stringsForEachInt": 9,
+        "stringLength": [6, 8],
+        "uniqueValues": 100000
+    },
+    {
+        "name": "table1",
+        "rows": 100000,
+        "columns": 10,
+        "stringsForEachInt": 9,
+        "stringLength": [6, 8],
+        "uniqueValues": 100000
+    },
+    {
+        "name": "table2",
+        "rows": 100000,
+        "columns": 10,
+        "stringsForEachInt": 9,
+        "stringLength": [6, 8],
+        "uniqueValues": 100000
+    },
+    {
+        "name": "table3",
+        "rows": 100000,
+        "columns": 10,
+        "stringsForEachInt": 9,
+        "stringLength": [6, 8],
+        "uniqueValues": 100000
+    },
+    {
+        "name": "table4",
+        "rows": 100000,
+        "columns": 10,
+        "stringsForEachInt": 9,
+        "stringLength": [6, 8],
+        "uniqueValues": 100000
+    },
+    {
+        "name": "table5",
+        "rows": 100000,
+        "columns": 10,
+        "stringsForEachInt": 9,
+        "stringLength": [6, 8],
+        "uniqueValues": 100000
+    },
+    {
+        "name": "table6",
+        "rows": 100000,
+        "columns": 10,
+        "stringsForEachInt": 9,
+        "stringLength": [6, 8],
+        "uniqueValues": 100000
+    },
+    {
+        "name": "table7",
+        "rows": 100000,
+        "columns": 10,
+        "stringsForEachInt": 9,
+        "stringLength": [6, 8],
+        "uniqueValues": 100000
     }
 ]
