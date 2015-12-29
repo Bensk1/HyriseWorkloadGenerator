@@ -87,11 +87,7 @@ class Table:
         queries = []
 
         for i in range(config.config["randomQueriesPerTable"]):
-            rq = self.generateRandomQuery()
-            queryFile = open("%i.json"%(i), 'w')
-            queryFile.write(rq)
-            queryFile.close()
-            # queries.append(self.generateRandomQuery())
+            queries.append(self.generateRandomQuery())
 
         return queries
 
