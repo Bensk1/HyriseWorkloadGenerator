@@ -14,29 +14,5 @@
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
         "uniqueValues": [100000, 100000, 10000, 1000, 100]
-    },
-    {
-        "name": "supplier",
-        "rows": 1000000,
-        "columns": 5,
-        "stringsForEachInt": 3,
-        "stringLength": [6, 8],
-        "uniqueValues": [1000000, 1000000, 100000, 10000, 1000]
-    },
-    {
-        "name": "item",
-        "rows": 2000000,
-        "columns": 5,
-        "stringsForEachInt": 9,
-        "stringLength": [6, 8],
-        "uniqueValues": [2000000, 2000000, 200000, 20000, 2000]
-    },
-    {
-        "name": "invoice",
-        "rows": 2000001,
-        "columns": 5,
-        "stringsForEachInt": 5,
-        "stringLength": [6, 8],
-        "uniqueValues": [2000001, 2000001, 200001, 20001, 2001]
     }
 ]
