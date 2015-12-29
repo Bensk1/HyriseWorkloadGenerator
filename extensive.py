@@ -8,6 +8,8 @@ from tableLoader import TableLoader
 QUERIES_PER_DAY = 10000
 RANDOM_PERCENTAGE_PER_DAY = 0.05
 SHARED_USUAL_QUERIES = 0.6
+DAYS = 1
+NOISE_FACTOR = 0.01
 
 
 class Runner:
@@ -29,13 +31,6 @@ class Runner:
         for boostIndex, value in zip(self.boostTables, config.config["boostValues"]):
             tableShares[boostIndex] = int(tableShares[boostIndex] * value)
 
-
-    def determineBoostTables(self):
-        self.boostTables = []
-
-        for i in range(len(config.config["boostValues"])):
-            self.boostTables.append(randint(0, len(self.tables) - 1))
-
     def calculateDay(self):
         queriesToday = self.noiseNumberOfQueries(QUERIES_PER_DAY)
         randomQueriesToday = int(queriesToday * RANDOM_PERCENTAGE_PER_DAY)
@@ -46,10 +41,17 @@ class Runner:
 
         self.boostTableShares(tableShares)
 
+        print tableShares
         self.currentDay += 1
 
+    def determineBoostTables(self):
+        self.boostTables = []
+
+        for i in range(len(config.config["boostValues"])):
+            self.boostTables.append(randint(0, len(self.tables) - 1))
+
     def noiseNumberOfQueries(self, numberOfQueries):
-        multiplier = uniform(-0.05, 0.05)
+        multiplier = uniform(-NOISE_FACTOR, NOISE_FACTOR)
 
         return int(numberOfQueries * (1 + multiplier))
 
@@ -57,7 +59,7 @@ class Runner:
         multipliers = []
         numberOfMultipliers = len(self.tables) / 2 if len(self.tables) % 2 == 0 else len(self.tables) / 2 + 1
         for i in range(numberOfMultipliers):
-            multipliers.append(uniform(-0.05, 0.05))
+            multipliers.append(uniform(-NOISE_FACTOR, NOISE_FACTOR))
             multipliers.append(multipliers[-1] * -1)
 
         tableShares = map(lambda tableShare, multiplier: int(tableShare * (1 + multiplier)), tableShares, multipliers[:len(tableShares)])
@@ -69,4 +71,5 @@ seed(1238585430324)
 
 runner = Runner(sys.argv[1])
 
-runner.calculateDay()
+for i in range(DAYS):
+    runner.calculateDay()
