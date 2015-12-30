@@ -9,6 +9,11 @@
     "boostValues": [0.1, 0.06, 0.04, 0.03, 0.02],
     "queryShare": [0.3, 0.3, 0.4],
     "statisticsInCycles": false,
+    "weeklyPeriodicQuery": {
+        "startingFromDay" : 3,
+        "startDay": 5,
+        "duration" : 3
+    },
     "smallQueriesCompoundExpression": [
         {
             "name": "0and1",

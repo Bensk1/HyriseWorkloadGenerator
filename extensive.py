@@ -6,9 +6,9 @@ from random import randint, seed, shuffle, uniform
 from table import Table
 from tableLoader import TableLoader
 
-QUERIES_PER_DAY = 5000
+QUERIES_PER_DAY = 1000
 RANDOM_PERCENTAGE_PER_DAY = 0.05
-DAYS = 1
+DAYS = 15
 NOISE_FACTOR = 0.03
 
 
@@ -28,6 +28,23 @@ class Runner:
             self.tables.append(Table(self.tableDirectory, tableName))
 
         self.determineBoostPeriod()
+        self.periodActive = False
+
+    def addPeriodicQueries(self, queries):
+        period = config.config["weeklyPeriodicQuery"]
+
+        if self.currentDay >= period["startingFromDay"]:
+            if (self.currentDay % 7) == period["startDay"]:
+                self.periodActive = True
+                self.remainingPeriodDuration = period["duration"]
+
+            if self.periodActive:
+                self.remainingPeriodDuration -= 1
+                if self.remainingPeriodDuration == 0:
+                    self.periodActive = False
+                for i in range(50):
+                    queries.append(self.tables[0].mediumQuery)
+
 
     def addRandomQueries(self, numberOfQueries, queries):
         for i in range(numberOfQueries):
@@ -60,6 +77,8 @@ class Runner:
         # print reduce(lambda x,y: x + y, tableShares)
 
         queries = self.prepareQueries(tableShares)
+
+        self.addPeriodicQueries(queries)
 
         self.addRandomQueries(randomQueriesToday, queries)
         shuffle(queries)
