@@ -45,6 +45,8 @@ class QuerySender:
 
     def __init__(self):
         self.threadPool = Pool(THREAD_COUNT)
+        self.results = []
+        self.totalTime = 0
 
         if config.config["statisticsInCycles"]:
             self.tickMethod = tickCycles
@@ -53,4 +55,9 @@ class QuerySender:
 
     def sendQueries(self, queries):
         result = self.threadPool.map(self.tickMethod, queries, len(queries) / THREAD_COUNT)
-        print np.mean(result), np.median(result), reduce(lambda x,y: x+y, result)
+        self.results.append(result)
+
+        totalTimeToday = reduce(lambda x,y: x+y, result)
+        self.totalTime += totalTimeToday
+
+        print "Total time: %i" % reduce(lambda x,y: x+y, result)

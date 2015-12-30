@@ -38,6 +38,7 @@ class TableLoader:
             filename = filename.split(".tbl")[0]
             tableNames.append(filename.split('/')[-1])
 
+        tableNames.sort()
         return tableNames
 
     def loadTables(self):

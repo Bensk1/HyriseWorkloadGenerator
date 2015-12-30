@@ -7,7 +7,7 @@ from random import randint, seed, shuffle, uniform
 from table import Table
 from tableLoader import TableLoader
 
-QUERIES_PER_DAY = 1000
+QUERIES_PER_DAY = 3000
 RANDOM_PERCENTAGE_PER_DAY = 0.05
 DAYS = 20
 NOISE_FACTOR = 0.03
@@ -46,7 +46,7 @@ class Runner:
                     self.periodActive = False
                 for i in range(int(QUERIES_PER_DAY * period["queryPercentage"])):
                     queries.append(self.tables[period["tableIndex"]].mediumQuery)
-                print "Added %i medium queries of table with index %i" % (int(QUERIES_PER_DAY * period["queryPercentage"]), period["tableIndex"])
+                print "Added %i medium queries of table with index %i and name %s" % (int(QUERIES_PER_DAY * period["queryPercentage"]), period["tableIndex"], self.tables[period["tableIndex"]].name)
 
 
     def addRandomQueries(self, numberOfQueries, queries):
@@ -130,3 +130,5 @@ runner = Runner(sys.argv[1])
 
 for i in range(DAYS):
     runner.prepareDay()
+
+print runner.querySender.totalTime
