@@ -36,7 +36,7 @@ class IndexEngine():
             "edges" : [\
                 ["optimizeIndex", "NoOp"]\
             ]\
-        }'}
+        }', 'performance': 'true'}
 
         return indexOptimizationRequest
 
@@ -48,4 +48,7 @@ class IndexEngine():
 
     def triggerIndexOptimization(self):
         indexOptimizationRequest = self.buildIndexOptimizationRequest()
-        requests.post("http://localhost:5000/jsonQuery", data = indexOptimizationRequest)
+        r = requests.post("http://localhost:5000/jsonQuery", data = indexOptimizationRequest)
+        performanceData = r.json()["performanceData"]
+
+        print "Index Optimization Time: %f" % (performanceData[-1]["endTime"] - performanceData[0]["startTime"])
