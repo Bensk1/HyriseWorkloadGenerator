@@ -44,8 +44,9 @@ class Runner:
                 self.remainingPeriodDuration -= 1
                 if self.remainingPeriodDuration == 0:
                     self.periodActive = False
-                for i in range(50):
-                    queries.append(self.tables[0].mediumQuery)
+                for i in range(int(QUERIES_PER_DAY * period["queryPercentage"])):
+                    queries.append(self.tables[period["tableIndex"]].mediumQuery)
+                print "Added %i medium queries of table with index %i" % (int(QUERIES_PER_DAY * period["queryPercentage"]), period["tableIndex"])
 
 
     def addRandomQueries(self, numberOfQueries, queries):

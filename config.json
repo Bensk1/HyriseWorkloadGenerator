@@ -13,7 +13,9 @@
     "weeklyPeriodicQuery": {
         "startingFromDay" : 3,
         "startDay": 5,
-        "duration" : 3
+        "duration" : 3,
+        "tableIndex": 4,
+        "queryPercentage": 0.1
     },
     "smallQueriesCompoundExpression": [
         {
