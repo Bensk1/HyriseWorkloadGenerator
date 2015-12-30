@@ -1,5 +1,4 @@
-from random import randint
-from random import choice
+from random import choice, randint, shuffle
 import string
 import os
 
@@ -119,13 +118,18 @@ class Table:
             else:
                 self.values.append(self.generateRandomStrings(self.stringColumnLengths[column], self.uniqueValues[column]))
 
+    def generateValueOrder(self):
+        self.valueOrder = range(self.rows)
+        shuffle(self.valueOrder)
+
     def buildTableData(self):
         for row in range(0, self.rows):
             rowValues = ""
+
             for column in range(0, self.columns):
                 if column > 0:
                     rowValues += "|"
-                rowValues += self.values[column][randint(0, self.uniqueValues[column] - 1)]
+                rowValues += self.values[column][self.valueOrder[row] % self.uniqueValues[column]]
 
             self.outputFile.write(rowValues + "\n")
 
@@ -143,6 +147,7 @@ class Table:
         self.buildTableHeader()
         self.determineStringColumnLength()
         self.generateValues()
+        self.generateValueOrder()
         self.buildTableData()
         self.writeTableMetaData()
         self.outputFile.close()
