@@ -10,7 +10,6 @@ QUERIES_PER_DAY = 5000
 RANDOM_PERCENTAGE_PER_DAY = 0.05
 DAYS = 1
 NOISE_FACTOR = 0.03
-BOOST_PERIOD = 90
 
 
 class Runner:
@@ -28,6 +27,8 @@ class Runner:
         for tableName in self.tableLoader.getTableNames():
             self.tables.append(Table(self.tableDirectory, tableName))
 
+        self.determineBoostPeriod()
+
     def addRandomQueries(self, numberOfQueries, queries):
         for i in range(numberOfQueries):
             randomTable = randint(0, len(self.tables) - 1)
@@ -35,11 +36,15 @@ class Runner:
             queries.append(self.tables[randomTable].randomQueries[randomQuery])
 
     def boostTableShares(self, tableShares, queriesToday):
-        if self.currentDay % BOOST_PERIOD == 1:
+        if self.currentDay % self.boostPeriod == 1:
             self.determineBoostTables()
+            self.determineBoostPeriod()
 
         for boostIndex, value in zip(self.boostTables, config.config["boostValues"]):
             tableShares[boostIndex] = int(tableShares[boostIndex] + value * queriesToday)
+
+    def determineBoostPeriod(self):
+        self.boostPeriod = randint(30, 90)
 
     def prepareDay(self):
         queriesToday = self.noiseNumberOfQueries(QUERIES_PER_DAY)
