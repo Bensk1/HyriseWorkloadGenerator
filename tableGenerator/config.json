@@ -1,82 +1,82 @@
 [
     {
         "name": "customer",
-        "rows": 10000,
+        "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": 10000
+        "uniqueValues": 1000000
     },
     {
         "name": "order",
-        "rows": 100000,
+        "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": 100000
+        "uniqueValues": 1000000
     },
     {
         "name": "stuff",
-        "rows": 100000,
+        "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": 100000
+        "uniqueValues": 1000000
     },
     {
         "name": "table1",
-        "rows": 100000,
+        "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": 100000
+        "uniqueValues": 1000000
     },
     {
         "name": "table2",
-        "rows": 100000,
+        "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": 100000
+        "uniqueValues": 1000000
     },
     {
         "name": "table3",
-        "rows": 100000,
+        "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": 100000
+        "uniqueValues": 1000000
     },
     {
         "name": "table4",
-        "rows": 100000,
+        "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": 100000
+        "uniqueValues": 1000000
     },
     {
         "name": "table5",
-        "rows": 100000,
+        "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": 100000
+        "uniqueValues": 1000000
     },
     {
         "name": "table6",
-        "rows": 100000,
+        "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": 100000
+        "uniqueValues": 1000000
     },
     {
         "name": "table7",
-        "rows": 100000,
+        "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
         "stringLength": [6, 8],
-        "uniqueValues": 100000
+        "uniqueValues": 1000000
     }
 ]

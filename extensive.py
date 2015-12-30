@@ -1,6 +1,7 @@
 import config
 import sys
 
+from indexEngine import IndexEngine
 from querySender import QuerySender
 from random import randint, seed, shuffle, uniform
 from table import Table
@@ -8,7 +9,7 @@ from tableLoader import TableLoader
 
 QUERIES_PER_DAY = 1000
 RANDOM_PERCENTAGE_PER_DAY = 0.05
-DAYS = 15
+DAYS = 20
 NOISE_FACTOR = 0.03
 
 
@@ -22,6 +23,7 @@ class Runner:
         self.tableLoader.loadTables()
 
         self.querySender = QuerySender()
+        self.indexEngine = IndexEngine()
 
         self.tables = []
         for tableName in self.tableLoader.getTableNames():
@@ -61,7 +63,7 @@ class Runner:
             tableShares[boostIndex] = int(tableShares[boostIndex] + value * queriesToday)
 
     def determineBoostPeriod(self):
-        self.boostPeriod = randint(30, 90)
+        self.boostPeriod = randint(3, 4)
 
     def prepareDay(self):
         queriesToday = self.noiseNumberOfQueries(QUERIES_PER_DAY)
@@ -82,8 +84,11 @@ class Runner:
 
         self.addRandomQueries(randomQueriesToday, queries)
         shuffle(queries)
-        print len(queries)
+
         self.querySender.sendQueries(queries)
+
+        if config.config["selfTunedIndexSelection"]:
+            self.indexEngine.triggerIndexOptimization()
 
         self.currentDay += 1
 

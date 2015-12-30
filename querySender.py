@@ -1,4 +1,5 @@
 import config
+import numpy as np
 import requests
 import time
 import util
@@ -52,3 +53,4 @@ class QuerySender:
 
     def sendQueries(self, queries):
         result = self.threadPool.map(self.tickMethod, queries, len(queries) / THREAD_COUNT)
+        print np.mean(result), np.median(result), reduce(lambda x,y: x+y, result)
