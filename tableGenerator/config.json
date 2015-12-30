@@ -1,6 +1,6 @@
 [
     {
-        "name": "customer",
+        "name": "table01",
         "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
@@ -8,7 +8,7 @@
         "uniqueValues": 1000000
     },
     {
-        "name": "order",
+        "name": "table02",
         "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
@@ -16,7 +16,7 @@
         "uniqueValues": 1000000
     },
     {
-        "name": "stuff",
+        "name": "table03",
         "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
@@ -24,7 +24,7 @@
         "uniqueValues": 1000000
     },
     {
-        "name": "table1",
+        "name": "table04",
         "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
@@ -32,7 +32,7 @@
         "uniqueValues": 1000000
     },
     {
-        "name": "table2",
+        "name": "table05",
         "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
@@ -40,7 +40,7 @@
         "uniqueValues": 1000000
     },
     {
-        "name": "table3",
+        "name": "table06",
         "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
@@ -48,7 +48,7 @@
         "uniqueValues": 1000000
     },
     {
-        "name": "table4",
+        "name": "table07",
         "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
@@ -56,7 +56,7 @@
         "uniqueValues": 1000000
     },
     {
-        "name": "table5",
+        "name": "table08",
         "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
@@ -64,7 +64,7 @@
         "uniqueValues": 1000000
     },
     {
-        "name": "table6",
+        "name": "table09",
         "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
@@ -72,7 +72,7 @@
         "uniqueValues": 1000000
     },
     {
-        "name": "table7",
+        "name": "table10",
         "rows": 1000000,
         "columns": 10,
         "stringsForEachInt": 9,
