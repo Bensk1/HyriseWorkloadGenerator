@@ -7,7 +7,7 @@ from random import randint, seed, shuffle, uniform
 from table import Table
 from tableLoader import TableLoader
 
-QUERIES_PER_DAY = 3000
+QUERIES_PER_DAY = 5000
 RANDOM_PERCENTAGE_PER_DAY = 0.05
 DAYS = 20
 NOISE_FACTOR = 0.03
@@ -64,7 +64,7 @@ class Runner:
             tableShares[boostIndex] = int(tableShares[boostIndex] + value * queriesToday)
 
     def determineBoostPeriod(self):
-        self.boostPeriod = randint(3, 4)
+        self.boostPeriod = randint(6, 9)
 
     def prepareDay(self):
         queriesToday = self.noiseNumberOfQueries(QUERIES_PER_DAY)
