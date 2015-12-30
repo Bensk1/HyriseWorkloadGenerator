@@ -14,6 +14,8 @@ class Table:
         self.maxStringLength = stringLength[1]
         self.uniqueValues = self.normalizeUniqueValues(uniqueValues, self.columns)
 
+        self.memoryBudgetForFullIndexation = self.calculateMemoryBudget()
+
         self.checkAndCreatePath(path)
         self.outputFile = open("%s/%s.tbl" % (path, self.name), "w")
         self.metaDataFile = metaDataFile
@@ -21,6 +23,17 @@ class Table:
     def checkAndCreatePath(self, path):
         if not os.path.exists(path):
             os.makedirs(path)
+
+    def calculateMemoryBudget(self):
+        memoryBudget = 0
+
+        for uniqueValue in self.uniqueValues:
+            memoryBudget += 8 * (uniqueValue + 1)
+            memoryBudget += 8 * self.rows
+            memoryBudget += 8 + 24 + 24 + 24
+
+        return memoryBudget
+
 
     def normalizeUniqueValues(self, uniqueValues, columns):
         if isinstance(uniqueValues, list):
@@ -122,7 +135,7 @@ class Table:
         for column in range(0, self.columns):
             try:
                 int(self.values[column][0])
-                self.metaDataFile.write("Column: %i min %s max %s\n" % (column, self.values[column][0], self.values[column][self.uniqueValues[column] - 1]))
+                self.metaDataFile.write("Column: %i min %s max %s fullIndexMemoryBudget %i \n" % (column, self.values[column][0], self.values[column][self.uniqueValues[column] - 1], self.memoryBudgetForFullIndexation))
             except:
                 pass
 
@@ -133,3 +146,5 @@ class Table:
         self.buildTableData()
         self.writeTableMetaData()
         self.outputFile.close()
+
+        return self.memoryBudgetForFullIndexation
