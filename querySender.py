@@ -54,7 +54,7 @@ class QuerySender:
             self.tickMethod = tickSeconds
 
     def sendQueries(self, queries):
-        result = self.threadPool.map(self.tickMethod, queries, len(queries) / THREAD_COUNT)
+        result = self.threadPool.map(self.tickMethod, queries, int(len(queries) / THREAD_COUNT) + 1)
         self.results.append(result)
 
         totalTimeToday = reduce(lambda x,y: x+y, result)
