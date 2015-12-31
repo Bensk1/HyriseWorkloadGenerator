@@ -3,7 +3,7 @@ import sys
 
 from indexEngine import IndexEngine
 from querySender import QuerySender
-from random import randint, seed, shuffle, uniform
+from random import randint, random, seed, shuffle, uniform
 from table import Table
 from tableLoader import TableLoader
 
@@ -95,9 +95,10 @@ class Runner:
 
     def determineBoostTables(self):
         self.boostTables = []
+        tables = sorted(self.tables, key =lambda *args: random())
 
         for i in range(len(config.config["boostValues"])):
-            self.boostTables.append(randint(0, len(self.tables) - 1))
+            self.boostTables.append(tables[i])
 
     def noiseNumberOfQueries(self, numberOfQueries):
         multiplier = uniform(-NOISE_FACTOR, NOISE_FACTOR)
