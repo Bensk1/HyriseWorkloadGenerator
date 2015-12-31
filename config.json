@@ -3,7 +3,6 @@
     "loadDumpedTables": true,
     "minBoostPeriod": 6,
     "maxBoostPeriod": 9,
-    "numberOfColumns": 10,
     "randomQueriesPerTable": 5,
     "smallQueriesAttributes": 3,
     "mediumQueriesAttributes": 5,

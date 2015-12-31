@@ -140,7 +140,7 @@ class Table:
         return self.generateQuery(config.config["largeQueriesAttributes"], compoundExpressions)
 
     def getRandomColumnSelection(self):
-        columns = range(config.config["numberOfColumns"])
+        columns = range(len(self.values))
         shuffle(columns)
 
         return columns[:config.config["randomQueriesAttributes"]]
