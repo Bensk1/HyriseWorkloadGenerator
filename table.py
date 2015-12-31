@@ -38,11 +38,16 @@ class Table:
         for column in columns:
             columnObjects.append(Column(column, "EQ", self.values[column], self.datatypes[column]))
 
+        if config.config["loadDumpedTables"]:
+            tableName = "%s_dumped" % (self.name)
+        else:
+            tableName = self.name
+
         queryTemplateFile = "queryTemplateCompressed.json" if config.config["compressedQueries"] else "queryTemplate.json"
         with open(queryTemplateFile) as queryTemplate:
             template = Template(queryTemplate.read())
             query = {}
-            query['query'] = template.render(columns = columnObjects, columnLen = len(columnObjects), table = self.name, compoundExpressions = compoundExpressions, compoundExpressionLen = len(compoundExpressions))
+            query['query'] = template.render(columns = columnObjects, columnLen = len(columnObjects), table = tableName, compoundExpressions = compoundExpressions, compoundExpressionLen = len(compoundExpressions))
             query['performance'] = "true"
             return query
 
@@ -106,11 +111,16 @@ class Table:
         for attribute in range(numberOfAttributes):
             columnObjects.append(Column(attribute, "EQ", self.values[attribute], self.datatypes[attribute]))
 
+        if config.config["loadDumpedTables"]:
+            tableName = "%s_dumped" % (self.name)
+        else:
+            tableName = self.name
+
         queryTemplateFile = "queryTemplateCompressed.json" if config.config["compressedQueries"] else "queryTemplate.json"
         with open(queryTemplateFile) as queryTemplate:
             template = Template(queryTemplate.read())
             query = {}
-            query['query'] = template.render(columns = columnObjects, columnLen = len(columnObjects), table = self.name, compoundExpressions = compoundExpressions, compoundExpressionLen = len(compoundExpressions))
+            query['query'] = template.render(columns = columnObjects, columnLen = len(columnObjects), table = tableName, compoundExpressions = compoundExpressions, compoundExpressionLen = len(compoundExpressions))
             query['performance'] = "true"
             return query
 

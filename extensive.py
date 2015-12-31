@@ -20,7 +20,7 @@ class Runner:
         self.tableDirectory = tableDirectory
 
         self.tableLoader = TableLoader(tableDirectory)
-        self.tableLoader.loadTables()
+        self.tableLoader.loadTables(config.config["loadDumpedTables"])
 
         self.querySender = QuerySender()
         self.indexEngine = IndexEngine()

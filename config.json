@@ -1,5 +1,6 @@
 {
-    "compressedQueries": false,
+    "compressedQueries": true,
+    "loadDumpedTables": true,
     "numberOfColumns": 10,
     "randomQueriesPerTable": 5,
     "smallQueriesAttributes": 3,

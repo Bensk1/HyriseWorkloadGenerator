@@ -12,6 +12,10 @@ class TableLoader:
         loadTableRequest = self.buildLoadTableRequest(tableName)
         requests.post("http://localhost:5000/jsonQuery", data = loadTableRequest)
 
+    def buildAndSendRequestDumped(self, tableName):
+        loadDumpedTableRequest = self.buildLoadTableRequestDumped(tableName)
+        requests.post("http://localhost:5000/jsonQuery", data = loadDumpedTableRequest)
+
     def buildLoadTableRequest(self, tableName):
             loadTableRequest = {'query': '{\
                 "operators": {\
@@ -30,6 +34,24 @@ class TableLoader:
 
             return loadTableRequest
 
+    def buildLoadTableRequestDumped(self, tableName):
+            loadTableRequest = {'query': '{\
+                "operators": {\
+                    "loadDumpedTable": {\
+                        "type" : "LoadDumpedTable",\
+                        "name" : "%s_dumped"\
+                    },\
+                    "NoOp": {\
+                        "type" : "NoOp"\
+                    }\
+                },\
+                "edges" : [\
+                    ["loadDumpedTable", "NoOp"]\
+                ]\
+            }' % (tableName)}
+
+            return loadTableRequest
+
     def getTableNames(self):
         tableNames = []
         filenames = glob.glob("%s/*.tbl" % (self.directory))
@@ -41,13 +63,18 @@ class TableLoader:
         tableNames.sort()
         return tableNames
 
-    def loadTables(self):
+    def loadTables(self, dumped):
         print "Load all tables in directory: %s" % (self.directory)
 
         tableNames = self.getTableNames()
 
         threadPool = Pool(len(tableNames))
-        threadPool.map(self.buildAndSendRequest, tableNames)
+
+        if dumped:
+            threadPool.map(self.buildAndSendRequestDumped, tableNames)
+        else:
+            threadPool.map(self.buildAndSendRequest, tableNames)
+
         threadPool.close()
         threadPool.join()
 
