@@ -7,9 +7,9 @@ from random import randint, random, seed, shuffle, uniform
 from table import Table
 from tableLoader import TableLoader
 
-QUERIES_PER_DAY = 5000
+QUERIES_PER_DAY = 10000
 RANDOM_PERCENTAGE_PER_DAY = 0.05
-DAYS = 20
+DAYS = 100
 NOISE_FACTOR = 0.03
 
 
@@ -64,7 +64,7 @@ class Runner:
             tableShares[boostIndex] = int(tableShares[boostIndex] + value * queriesToday)
 
     def determineBoostPeriod(self):
-        self.boostPeriod = randint(config.config["minBoostPeriod"], config.config["maxBoostPeriod"])
+        self.boostPeriod = self.currentDay + randint(config.config["minBoostPeriod"], config.config["maxBoostPeriod"])
 
     def prepareDay(self):
         queriesToday = self.noiseNumberOfQueries(QUERIES_PER_DAY)
@@ -95,8 +95,8 @@ class Runner:
 
     def determineBoostTables(self):
         self.boostTables = []
-        tables = sorted(self.tables, key =lambda *args: random())
-
+        tables = sorted(range(len(self.tables)), key =lambda *args: random())
+        print tables
         for i in range(len(config.config["boostValues"])):
             self.boostTables.append(tables[i])
 
