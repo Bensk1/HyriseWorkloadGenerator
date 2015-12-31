@@ -64,7 +64,7 @@ class Runner:
             tableShares[boostIndex] = int(tableShares[boostIndex] + value * queriesToday)
 
     def determineBoostPeriod(self):
-        self.boostPeriod = randint(6, 9)
+        self.boostPeriod = randint(config.config["minBoostPeriod"], config.config["maxBoostPeriod"])
 
     def prepareDay(self):
         queriesToday = self.noiseNumberOfQueries(QUERIES_PER_DAY)
