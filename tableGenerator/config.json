@@ -3,80 +3,160 @@
         "name": "table01",
         "rows": 1000000,
         "columns": 10,
-        "stringsForEachInt": 9,
+        "stringsForEachInt": 8,
         "stringLength": [6, 8],
-        "uniqueValues": 1000000
+        "uniqueValues": [1000000, 500000, 500000, 1000000, 500000, 500000, 200000, 100000, 200000, 100000]
     },
     {
         "name": "table02",
-        "rows": 1000000,
+        "rows": 2000000,
         "columns": 10,
-        "stringsForEachInt": 9,
+        "stringsForEachInt": 8,
         "stringLength": [6, 8],
-        "uniqueValues": 1000000
+        "uniqueValues": [2000000, 1000000, 1000000, 2000000, 1000000, 1000000, 400000, 200000, 400000, 200000]
     },
     {
         "name": "table03",
-        "rows": 1000000,
+        "rows": 3000000,
         "columns": 10,
-        "stringsForEachInt": 9,
+        "stringsForEachInt": 8,
         "stringLength": [6, 8],
-        "uniqueValues": 1000000
+        "uniqueValues": [3000000, 1500000, 1500000, 3000000, 1500000, 1500000, 600000, 300000, 600000, 300000]
     },
     {
         "name": "table04",
-        "rows": 1000000,
+        "rows": 500000,
         "columns": 10,
-        "stringsForEachInt": 9,
+        "stringsForEachInt": 8,
         "stringLength": [6, 8],
-        "uniqueValues": 1000000
+        "uniqueValues": [500000, 250000, 250000, 500000, 250000, 250000, 100000, 50000, 100000, 50000]
     },
     {
         "name": "table05",
-        "rows": 1000000,
+        "rows": 5000000,
         "columns": 10,
-        "stringsForEachInt": 9,
+        "stringsForEachInt": 8,
         "stringLength": [6, 8],
-        "uniqueValues": 1000000
+        "uniqueValues": [5000000, 2500000, 2500000, 5000000, 2500000, 2500000, 1000000, 500000, 1000000, 500000]
     },
     {
         "name": "table06",
         "rows": 1000000,
         "columns": 10,
-        "stringsForEachInt": 9,
+        "stringsForEachInt": 8,
         "stringLength": [6, 8],
-        "uniqueValues": 1000000
+        "uniqueValues": [1000000, 500000, 500000, 1000000, 500000, 500000, 200000, 100000, 200000, 100000]
     },
     {
         "name": "table07",
-        "rows": 1000000,
+        "rows": 2000000,
         "columns": 10,
-        "stringsForEachInt": 9,
+        "stringsForEachInt": 8,
         "stringLength": [6, 8],
-        "uniqueValues": 1000000
+        "uniqueValues": [2000000, 1000000, 1000000, 2000000, 1000000, 1000000, 400000, 200000, 400000, 200000]
     },
     {
         "name": "table08",
-        "rows": 1000000,
+        "rows": 3000000,
         "columns": 10,
-        "stringsForEachInt": 9,
+        "stringsForEachInt": 8,
         "stringLength": [6, 8],
-        "uniqueValues": 1000000
+        "uniqueValues": [3000000, 1500000, 1500000, 3000000, 1500000, 1500000, 600000, 300000, 600000, 300000]
     },
     {
         "name": "table09",
-        "rows": 1000000,
+        "rows": 500000,
         "columns": 10,
-        "stringsForEachInt": 9,
+        "stringsForEachInt": 8,
         "stringLength": [6, 8],
-        "uniqueValues": 1000000
+        "uniqueValues": [500000, 250000, 250000, 500000, 250000, 250000, 100000, 50000, 100000, 50000]
     },
     {
         "name": "table10",
+        "rows": 5000000,
+        "columns": 10,
+        "stringsForEachInt": 8,
+        "stringLength": [6, 8],
+        "uniqueValues": [5000000, 2500000, 2500000, 5000000, 2500000, 2500000, 1000000, 500000, 1000000, 500000]
+    },
+    {
+        "name": "table11",
         "rows": 1000000,
         "columns": 10,
-        "stringsForEachInt": 9,
+        "stringsForEachInt": 8,
         "stringLength": [6, 8],
-        "uniqueValues": 1000000
+        "uniqueValues": [1000000, 500000, 500000, 1000000, 500000, 500000, 200000, 100000, 200000, 100000]
+    },
+    {
+        "name": "table12",
+        "rows": 2000000,
+        "columns": 10,
+        "stringsForEachInt": 8,
+        "stringLength": [6, 8],
+        "uniqueValues": [2000000, 1000000, 1000000, 2000000, 1000000, 1000000, 400000, 200000, 400000, 200000]
+    },
+    {
+        "name": "table13",
+        "rows": 3000000,
+        "columns": 10,
+        "stringsForEachInt": 8,
+        "stringLength": [6, 8],
+        "uniqueValues": [3000000, 1500000, 1500000, 3000000, 1500000, 1500000, 600000, 300000, 600000, 300000]
+    },
+    {
+        "name": "table14",
+        "rows": 500000,
+        "columns": 10,
+        "stringsForEachInt": 8,
+        "stringLength": [6, 8],
+        "uniqueValues": [500000, 250000, 250000, 500000, 250000, 250000, 100000, 50000, 100000, 50000]
+    },
+    {
+        "name": "table15",
+        "rows": 5000000,
+        "columns": 10,
+        "stringsForEachInt": 8,
+        "stringLength": [6, 8],
+        "uniqueValues": [5000000, 2500000, 2500000, 5000000, 2500000, 2500000, 1000000, 500000, 1000000, 500000]
+    },
+    {
+        "name": "table16",
+        "rows": 1000000,
+        "columns": 10,
+        "stringsForEachInt": 8,
+        "stringLength": [6, 8],
+        "uniqueValues": [1000000, 500000, 500000, 1000000, 500000, 500000, 200000, 100000, 200000, 100000]
+    },
+    {
+        "name": "table17",
+        "rows": 2000000,
+        "columns": 10,
+        "stringsForEachInt": 8,
+        "stringLength": [6, 8],
+        "uniqueValues": [2000000, 1000000, 1000000, 2000000, 1000000, 1000000, 400000, 200000, 400000, 200000]
+    },
+    {
+        "name": "table18",
+        "rows": 3000000,
+        "columns": 10,
+        "stringsForEachInt": 8,
+        "stringLength": [6, 8],
+        "uniqueValues": [3000000, 1500000, 1500000, 3000000, 1500000, 1500000, 600000, 300000, 600000, 300000]
+    },
+    {
+        "name": "table19",
+        "rows": 500000,
+        "columns": 10,
+        "stringsForEachInt": 8,
+        "stringLength": [6, 8],
+        "uniqueValues": [500000, 250000, 250000, 500000, 250000, 250000, 100000, 50000, 100000, 50000]
+    },
+    {
+        "name": "table20",
+        "rows": 5000000,
+        "columns": 10,
+        "stringsForEachInt": 8,
+        "stringLength": [6, 8],
+        "uniqueValues": [5000000, 2500000, 2500000, 5000000, 2500000, 2500000, 1000000, 500000, 1000000, 500000]
     }
 ]
