@@ -1,22 +1,22 @@
 {
     "compressedQueries": true,
     "loadDumpedTables": true,
-    "minBoostPeriod": 6,
-    "maxBoostPeriod": 9,
+    "minBoostPeriod": 10,
+    "maxBoostPeriod": 20,
     "randomQueriesPerTable": 5,
     "smallQueriesAttributes": 3,
     "mediumQueriesAttributes": 5,
     "largeQueriesAttributes": 9,
     "randomQueriesAttributes": 7,
     "boostValues": [0.1, 0.06, 0.04, 0.03, 0.02],
-    "queryShare": [0.2, 0.25, 0.55],
+    "queryShare": [0.2, 0.3, 0.5],
     "statisticsInCycles": false,
     "selfTunedIndexSelection": true,
     "weeklyPeriodicQuery": {
         "startingFromDay" : 3,
-        "startDay": 5,
+        "startDay": 19,
         "duration" : 3,
-        "tableIndex": 4,
+        "tableIndex": 2,
         "queryPercentage": 0.15
     },
     "smallQueriesCompoundExpression": [
