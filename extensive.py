@@ -80,6 +80,7 @@ class Runner:
         # print reduce(lambda x,y: x + y, tableShares)
 
         queries = self.prepareQueries(tableShares)
+        print "Sending %i queries today" % (len(queries))
 
         self.addPeriodicQueries(queries)
 
@@ -96,7 +97,7 @@ class Runner:
     def determineBoostTables(self):
         self.boostTables = []
         tables = sorted(range(len(self.tables)), key =lambda *args: random())
-        print tables
+
         for i in range(len(config.config["boostValues"])):
             self.boostTables.append(tables[i])
 
