@@ -13,11 +13,11 @@
     "statisticsInCycles": false,
     "selfTunedIndexSelection": true,
     "weeklyPeriodicQuery": {
-        "startingFromDay" : 3,
-        "startDay": 19,
+        "startingFromDay" : 19,
+        "startDay": 5,
         "duration" : 3,
         "tableIndex": 2,
-        "queryPercentage": 0.15
+        "queryPercentage": 0.25
     },
     "smallQueriesCompoundExpression": [
         {
