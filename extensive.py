@@ -66,6 +66,28 @@ class Runner:
     def determineBoostPeriod(self):
         self.boostPeriod = self.currentDay + randint(config.config["minBoostPeriod"], config.config["maxBoostPeriod"])
 
+    def determineBoostTables(self):
+        self.boostTables = []
+        tables = sorted(range(len(self.tables)), key =lambda *args: random())
+
+        for i in range(len(config.config["boostValues"])):
+            self.boostTables.append(tables[i])
+
+    def noiseNumberOfQueries(self, numberOfQueries):
+        multiplier = uniform(-NOISE_FACTOR, NOISE_FACTOR)
+
+        return int(numberOfQueries * (1 + multiplier))
+
+    def noiseTableShares(self, tableShares):
+        multipliers = []
+        numberOfMultipliers = len(self.tables) / 2 if len(self.tables) % 2 == 0 else len(self.tables) / 2 + 1
+        for i in range(numberOfMultipliers):
+            multipliers.append(uniform(-NOISE_FACTOR, NOISE_FACTOR))
+            multipliers.append(multipliers[-1] * -1)
+
+        tableShares = map(lambda tableShare, multiplier: int(tableShare * (1 + multiplier)), tableShares, multipliers[:len(tableShares)])
+        return tableShares
+
     def prepareDay(self):
         queriesToday = self.noiseNumberOfQueries(QUERIES_PER_DAY)
         randomQueriesToday = int(queriesToday * RANDOM_PERCENTAGE_PER_DAY)
@@ -98,28 +120,6 @@ class Runner:
                 self.indexEngine.triggerConsolidation()
 
         self.currentDay += 1
-
-    def determineBoostTables(self):
-        self.boostTables = []
-        tables = sorted(range(len(self.tables)), key =lambda *args: random())
-
-        for i in range(len(config.config["boostValues"])):
-            self.boostTables.append(tables[i])
-
-    def noiseNumberOfQueries(self, numberOfQueries):
-        multiplier = uniform(-NOISE_FACTOR, NOISE_FACTOR)
-
-        return int(numberOfQueries * (1 + multiplier))
-
-    def noiseTableShares(self, tableShares):
-        multipliers = []
-        numberOfMultipliers = len(self.tables) / 2 if len(self.tables) % 2 == 0 else len(self.tables) / 2 + 1
-        for i in range(numberOfMultipliers):
-            multipliers.append(uniform(-NOISE_FACTOR, NOISE_FACTOR))
-            multipliers.append(multipliers[-1] * -1)
-
-        tableShares = map(lambda tableShare, multiplier: int(tableShare * (1 + multiplier)), tableShares, multipliers[:len(tableShares)])
-        return tableShares
 
     def prepareQueries(self, tableShares):
         queries = []
