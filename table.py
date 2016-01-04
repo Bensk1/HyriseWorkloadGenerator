@@ -4,6 +4,7 @@ import linecache
 from column import Column
 from jinja2 import Template
 from random import randint, shuffle
+from query import Query, QueryType
 from subprocess import Popen, PIPE
 
 TABLE_HEADER_SIZE = 4
@@ -49,7 +50,7 @@ class Table:
             query = {}
             query['query'] = template.render(columns = columnObjects, columnLen = len(columnObjects), table = tableName, compoundExpressions = compoundExpressions, compoundExpressionLen = len(compoundExpressions))
             query['performance'] = "true"
-            return query
+            return Query(QueryType.random, query)
 
     def generateRandomQueryCompoundExpressions(self, columns):
         compoundExpressions = [{
@@ -127,17 +128,17 @@ class Table:
     def generateSmallQuery(self):
         compoundExpressions = self.parseCompoundExpressions(config.config["smallQueriesCompoundExpression"])
 
-        return self.generateQuery(config.config["smallQueriesAttributes"], compoundExpressions)
+        return Query(QueryType.small, self.generateQuery(config.config["smallQueriesAttributes"], compoundExpressions))
 
     def generateMediumQuery(self):
         compoundExpressions = self.parseCompoundExpressions(config.config["mediumQueriesCompoundExpression"])
 
-        return self.generateQuery(config.config["mediumQueriesAttributes"], compoundExpressions)
+        return Query(QueryType.medium, self.generateQuery(config.config["mediumQueriesAttributes"], compoundExpressions))
 
     def generateLargeQuery(self):
         compoundExpressions = self.parseCompoundExpressions(config.config["largeQueriesCompoundExpression"])
 
-        return self.generateQuery(config.config["largeQueriesAttributes"], compoundExpressions)
+        return Query(QueryType.large, self.generateQuery(config.config["largeQueriesAttributes"], compoundExpressions))
 
     def getRandomColumnSelection(self):
         columns = range(len(self.values))
