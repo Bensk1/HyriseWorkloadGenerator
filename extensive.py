@@ -138,5 +138,6 @@ runner = Runner(sys.argv[1])
 for i in range(DAYS):
     runner.prepareDay()
 
-print runner.querySender.dayTimes
-print runner.querySender.statistics
+print "totalDailyTimes = %s" % (runner.querySender.dayTimes)
+print "queryStatistics = %s" % (runner.querySender.statistics)
+print "indexOptimizationTimes = %s" % (runner.indexEngine.optimizationTimes)

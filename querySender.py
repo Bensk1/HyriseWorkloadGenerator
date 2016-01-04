@@ -70,8 +70,6 @@ class QuerySender:
 
         for key in STATISTICAL_FUNCTIONS:
             for qt in QueryType:
-                print key, qt.value
-                print STATISTICAL_FUNCTIONS[key](queryStatistics[qt.value])
                 self.statistics[qt.value][key].append(STATISTICAL_FUNCTIONS[key](queryStatistics[qt.value]))
 
         return total

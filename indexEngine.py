@@ -4,6 +4,7 @@ class IndexEngine():
 
     def __init__(self):
         self.clearIndexOptimizer()
+        self.optimizationTimes = []
 
     def buildClearIndexOptimizerRequest(self):
         clearIndexOptimizerRequest = {'query': '{\
@@ -75,6 +76,8 @@ class IndexEngine():
         r = requests.post("http://localhost:5000/jsonQuery", data = indexOptimizationRequest)
         try:
             performanceData = r.json()["performanceData"]
-            print "Index Optimization Time: %f" % (performanceData[-1]["endTime"] - performanceData[0]["startTime"])
+            indexOptimizationTime = performanceData[-1]["endTime"] - performanceData[0]["startTime"]
+            self.optimizationTimes.append(indexOptimizationTime)
+            print "Index Optimization Time: %f" % (indexOptimizationTime)
         except:
             print r.text
