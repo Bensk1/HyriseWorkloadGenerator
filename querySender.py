@@ -47,6 +47,7 @@ class QuerySender:
         self.threadPool = Pool(THREAD_COUNT)
         self.results = []
         self.totalTime = 0
+        self.dayTimes = []
 
         if config.config["statisticsInCycles"]:
             self.tickMethod = tickCycles
@@ -58,6 +59,7 @@ class QuerySender:
         self.results.append(result)
 
         totalTimeToday = reduce(lambda x,y: x+y, result)
+        self.dayTimes.append(totalTimeToday)
         self.totalTime += totalTimeToday
 
         print "Total time: %i" % reduce(lambda x,y: x+y, result)

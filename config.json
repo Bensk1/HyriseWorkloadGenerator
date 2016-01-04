@@ -1,8 +1,8 @@
 {
     "compressedQueries": true,
     "loadDumpedTables": true,
-    "minBoostPeriod": 10,
-    "maxBoostPeriod": 20,
+    "minBoostPeriod": 14,
+    "maxBoostPeriod": 28,
     "randomQueriesPerTable": 5,
     "smallQueriesAttributes": 3,
     "mediumQueriesAttributes": 5,
@@ -11,7 +11,7 @@
     "boostValues": [0.1, 0.06, 0.04, 0.03, 0.02],
     "queryShare": [0.2, 0.3, 0.5],
     "statisticsInCycles": false,
-    "selfTunedIndexSelection": true,
+    "selfTunedIndexSelection": false,
     "weeklyPeriodicQuery": {
         "startingFromDay" : 19,
         "startDay": 5,

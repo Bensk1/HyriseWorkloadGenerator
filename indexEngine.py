@@ -23,6 +23,24 @@ class IndexEngine():
 
         return clearIndexOptimizerRequest
 
+    def buildConsolidateIndexOptimizerRequest(self):
+        consolidateIndexOptimizerRequest = {'query': '{\
+            "operators": {\
+                "consolidateSelfTunedIndexSelector": {\
+                    "type" : "SelfTunedIndexSelection",\
+                    "startNextDayOnly": true\
+                },\
+                "NoOp": {\
+                    "type" : "NoOp"\
+                }\
+            },\
+            "edges" : [\
+                ["NoOp", "consolidateSelfTunedIndexSelector"]\
+            ]\
+        }'}
+
+        return consolidateIndexOptimizerRequest
+
     def buildIndexOptimizationRequest(self):
         indexOptimizationRequest = {'query': '{\
             "operators": {\
@@ -45,6 +63,12 @@ class IndexEngine():
         requests.post("http://localhost:5000/jsonQuery", data = clearIndexOptimizerRequest)
 
         print "Cleared the SelfTunedIndexSelector and dropped all Indexes"
+
+    def triggerConsolidation(self):
+        consolidateIndexOptimizerRequest = self.buildConsolidateIndexOptimizerRequest()
+        requests.post("http://localhost:5000/jsonQuery", data = consolidateIndexOptimizerRequest)
+
+        print "Consolidated the SelfTunedIndexSelector"
 
     def triggerIndexOptimization(self):
         indexOptimizationRequest = self.buildIndexOptimizationRequest()

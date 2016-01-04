@@ -7,9 +7,9 @@ from random import randint, random, seed, shuffle, uniform
 from table import Table
 from tableLoader import TableLoader
 
-QUERIES_PER_DAY = 10000
+QUERIES_PER_DAY = 5000
 RANDOM_PERCENTAGE_PER_DAY = 0.05
-DAYS = 100
+DAYS = 365
 NOISE_FACTOR = 0.03
 
 
@@ -91,6 +91,11 @@ class Runner:
 
         if config.config["selfTunedIndexSelection"]:
             self.indexEngine.triggerIndexOptimization()
+        else:
+            if self.currentDay in [1, 90, 180, 270]:
+                self.indexEngine.triggerIndexOptimization()
+            else:
+                self.indexEngine.triggerConsolidation()
 
         self.currentDay += 1
 
@@ -134,3 +139,4 @@ for i in range(DAYS):
     runner.prepareDay()
 
 print runner.querySender.totalTime
+print runner.querySender.dayTimes
