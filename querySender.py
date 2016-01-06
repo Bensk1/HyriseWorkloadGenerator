@@ -55,6 +55,7 @@ class QuerySender:
         self.threadPool = Pool(THREAD_COUNT)
         self.dayTimes = []
         self.statistics = self.initializeStatistics()
+        self.dayLengths = []
 
         if config.config["statisticsInCycles"]:
             self.tickMethod = tickCycles
@@ -84,11 +85,12 @@ class QuerySender:
         return statistics
 
     def sendQueries(self, queries):
-        dayBegin = currentTime()
+        dayBegin = util.currentTime()
         dailyResults = self.threadPool.map(self.tickMethod, queries, int(len(queries) / THREAD_COUNT) + 1)
-        dayEnd = currentTime()
+        dayEnd = util.currentTime()
 
         totalTimeToday = self.calculateStatistics(dailyResults, queries)
         self.dayTimes.append(totalTimeToday)
+        self.dayLengths.append((dayEnd - dayBegin) / 1000.0)
 
-        print "Total time today: %i - day length: %.2f" % (totalTimeToday, (dayEnd - dayBegin) / 1000.0)
+        print "Total time today: %i - day length: %.2f" % (totalTimeToday, self.dayLengths[-1])

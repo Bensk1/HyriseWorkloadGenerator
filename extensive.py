@@ -1,4 +1,5 @@
 import config
+import numpy as np
 import sys
 
 from indexEngine import IndexEngine
@@ -153,6 +154,7 @@ runner = Runner(sys.argv[1])
 for i in range(DAYS):
     runner.prepareDay()
 
+print "averageDayLength = %f" % (np.mean(runner.querySender.dayLengths))
 print "totalDailyTimes = %s" % (runner.querySender.dayTimes)
 print "queryStatistics = %s" % (runner.querySender.statistics)
 print "indexOptimizationTimes = %s" % (runner.indexEngine.optimizationTimes)

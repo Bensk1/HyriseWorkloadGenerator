@@ -2,7 +2,8 @@ import copy_reg
 import time
 import types
 
-currentTime = lambda: int(round(time.time() * 1000))
+def currentTime():
+    return int(round(time.time() * 1000))
 
 def _pickle_method(m):
     if m.im_self is None:
