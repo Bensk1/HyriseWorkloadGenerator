@@ -2,6 +2,7 @@ import config
 import sys
 
 from indexEngine import IndexEngine
+from query import QueryType
 from querySender import QuerySender
 from random import randint, random, seed, shuffle, uniform
 from table import Table
@@ -31,6 +32,7 @@ class Runner:
 
         self.determineBoostPeriod()
         self.periodActive = False
+        self.queryDistributionStatistic = [[0] * DAYS for i in range(len(QueryType))]
 
     def addPeriodicQueries(self, queries):
         period = config.config["weeklyPeriodicQuery"]
@@ -48,6 +50,9 @@ class Runner:
                     queries.append(self.tables[period["tableIndex"]].mediumQuery)
                 print "Added %i medium queries of table with index %i and name %s" % (int(QUERIES_PER_DAY * period["queryPercentage"]), period["tableIndex"], self.tables[period["tableIndex"]].name)
 
+                return int(QUERIES_PER_DAY * period["queryPercentage"])
+
+        return 0
 
     def addRandomQueries(self, numberOfQueries, queries):
         for i in range(numberOfQueries):
@@ -102,11 +107,13 @@ class Runner:
         # print reduce(lambda x,y: x + y, tableShares)
 
         queries = self.prepareQueries(tableShares)
-        print "Sending %i queries today" % (len(queries))
 
-        self.addPeriodicQueries(queries)
+        periodicQueriesToday = self.addPeriodicQueries(queries)
+
 
         self.addRandomQueries(randomQueriesToday, queries)
+        print "Sending %i queries today" % (len(queries))
+
         shuffle(queries)
 
         self.querySender.sendQueries(queries)
@@ -119,14 +126,22 @@ class Runner:
             else:
                 self.indexEngine.triggerConsolidation()
 
+        self.queryDistributionStatistic[QueryType.random.value][self.currentDay - 1] = (randomQueriesToday)
+        self.queryDistributionStatistic[QueryType.medium.value][self.currentDay - 1] += periodicQueriesToday
+
+
         self.currentDay += 1
 
     def prepareQueries(self, tableShares):
         queries = []
         for tableShare, table in zip(tableShares, self.tables):
-            queries += [table.smallQuery] * (int(tableShare * config.config["queryShare"][0]))
-            queries += [table.mediumQuery] * (int(tableShare * config.config["queryShare"][1]))
-            queries += [table.largeQuery] * (int(tableShare * config.config["queryShare"][2]))
+            queries += [table.smallQuery] * (int(tableShare * config.config["queryShare"][QueryType.small.value]))
+            queries += [table.mediumQuery] * (int(tableShare * config.config["queryShare"][QueryType.medium.value]))
+            queries += [table.largeQuery] * (int(tableShare * config.config["queryShare"][QueryType.large.value]))
+
+            self.queryDistributionStatistic[QueryType.small.value][self.currentDay - 1] += int(tableShare * config.config["queryShare"][QueryType.small.value])
+            self.queryDistributionStatistic[QueryType.medium.value][self.currentDay - 1] += int(tableShare * config.config["queryShare"][QueryType.medium.value])
+            self.queryDistributionStatistic[QueryType.large.value][self.currentDay - 1] += int(tableShare * config.config["queryShare"][QueryType.large.value])
 
         return queries
 
@@ -141,3 +156,4 @@ for i in range(DAYS):
 print "totalDailyTimes = %s" % (runner.querySender.dayTimes)
 print "queryStatistics = %s" % (runner.querySender.statistics)
 print "indexOptimizationTimes = %s" % (runner.indexEngine.optimizationTimes)
+print "queryDistribution = %s" % (runner.queryDistributionStatistic)
