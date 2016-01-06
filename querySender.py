@@ -84,9 +84,11 @@ class QuerySender:
         return statistics
 
     def sendQueries(self, queries):
+        dayBegin = currentTime()
         dailyResults = self.threadPool.map(self.tickMethod, queries, int(len(queries) / THREAD_COUNT) + 1)
+        dayEnd = currentTime()
 
         totalTimeToday = self.calculateStatistics(dailyResults, queries)
         self.dayTimes.append(totalTimeToday)
 
-        print "Total time today: %i" % totalTimeToday
+        print "Total time today: %i - day length: %.2f" % (totalTimeToday, (dayEnd - dayBegin) / 1000.0)
