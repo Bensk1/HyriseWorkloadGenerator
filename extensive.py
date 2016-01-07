@@ -122,7 +122,7 @@ class Runner:
         if config.config["selfTunedIndexSelection"]:
             self.indexEngine.triggerIndexOptimization()
         else:
-            if self.currentDay in [1, 90, 180, 270]:
+            if self.currentDay in [1, 2, 90, 180, 270]:
                 self.indexEngine.triggerIndexOptimization()
             else:
                 self.indexEngine.triggerConsolidation()
