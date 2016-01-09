@@ -132,6 +132,7 @@ class Runner:
 
 
         self.currentDay += 1
+        sys.stdout.flush()
 
     def prepareQueries(self, tableShares):
         queries = []
