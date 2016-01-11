@@ -1,9 +1,9 @@
 {
     "compressedQueries": true,
     "loadDumpedTables": true,
-    "minBoostPeriod": 5,
-    "maxBoostPeriod": 21,
-    "randomQueriesPerTable": 18,
+    "minBoostPeriod": 2,
+    "maxBoostPeriod": 8,
+    "randomQueriesPerTable": 20,
     "smallQueriesAttributes": 3,
     "mediumQueriesAttributes": 5,
     "largeQueriesAttributes": 9,
