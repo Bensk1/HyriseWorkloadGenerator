@@ -113,7 +113,7 @@ class Runner:
 
 
         self.addRandomQueries(randomQueriesToday, queries)
-        print "Sending %i queries today" % (len(queries))
+        print "Sending %i queries today. Random: %i Periodic: %i" % (len(queries), randomQueriesToday, periodicQueriesToday)
 
         shuffle(queries)
 
