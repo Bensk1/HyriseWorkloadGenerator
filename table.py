@@ -31,9 +31,9 @@ class Table:
 
         return datatypes
 
-    def generateRandomQuery(self):
-        columns = self.getRandomColumnSelection()
-        compoundExpressions = self.parseCompoundExpressions(self.generateRandomQueryCompoundExpressions(columns))
+    def generateRandomQuery(self, queryType):
+        columns = self.getRandomColumnSelection(queryType)
+        compoundExpressions = self.parseCompoundExpressions(self.generateRandomQueryCompoundExpressions(columns, queryType))
         columnObjects = []
 
         for column in columns:
@@ -52,51 +52,30 @@ class Table:
             query['performance'] = "true"
             return Query(QueryType.random, query)
 
-    def generateRandomQueryCompoundExpressions(self, columns):
-        compoundExpressions = [{
-            "name": "0and1",
-            "type": "and",
-            "l": columns[0],
-            "r": columns[1]
-        },
-        {
-            "name": "2and3",
-            "type": "and",
-            "l": columns[2],
-            "r": columns[3]
-        },
-        {
-            "name": "4and5",
-            "type": "and",
-            "l": columns[4],
-            "r": columns[5]
-        },
-        {
-            "name": "0and1and6",
-            "type": "and",
-            "l": "0and1",
-            "r": columns[6]
-        },
-        {
-            "name": "2and3and4and5",
-            "type": "and",
-            "l": "2and3",
-            "r": "4and5"
-        },
-        {
-            "name": "0and1and6and2and3and4and5",
-            "type": "and",
-            "l": "0and1and6",
-            "r": "2and3and4and5"
-        }]
-
-        return compoundExpressions
-
     def generateRandomQueries(self):
         queries = []
 
-        for i in range(config.config["randomQueriesPerTable"]):
-            queries.append(self.generateRandomQuery())
+        queries.append(self.generateRandomQuery(QueryType.small))
+        queries.append(self.generateRandomQuery(QueryType.large))
+        queries.append(self.generateRandomQuery(QueryType.large))
+        queries.append(self.generateRandomQuery(QueryType.medium))
+        queries.append(self.generateRandomQuery(QueryType.small))
+        queries.append(self.generateRandomQuery(QueryType.medium))
+        queries.append(self.generateRandomQuery(QueryType.large))
+        queries.append(self.generateRandomQuery(QueryType.medium))
+        queries.append(self.generateRandomQuery(QueryType.large))
+        queries.append(self.generateRandomQuery(QueryType.large))
+
+        queries.append(self.generateRandomQuery(QueryType.medium))
+        queries.append(self.generateRandomQuery(QueryType.large))
+        queries.append(self.generateRandomQuery(QueryType.large))
+        queries.append(self.generateRandomQuery(QueryType.large))
+        queries.append(self.generateRandomQuery(QueryType.small))
+        queries.append(self.generateRandomQuery(QueryType.large))
+        queries.append(self.generateRandomQuery(QueryType.small))
+        queries.append(self.generateRandomQuery(QueryType.medium))
+        queries.append(self.generateRandomQuery(QueryType.large))
+        queries.append(self.generateRandomQuery(QueryType.medium))
 
         return queries
 
@@ -140,11 +119,11 @@ class Table:
 
         return Query(QueryType.large, self.generateQuery(config.config["largeQueriesAttributes"], compoundExpressions))
 
-    def getRandomColumnSelection(self):
+    def getRandomColumnSelection(self, queryType):
         columns = range(len(self.values))
         shuffle(columns)
 
-        return columns[:config.config["randomQueriesAttributes"]]
+        return columns[:config.config["randomQueriesAttributes"][queryType.value]]
 
 
     def getRandomValues(self):
@@ -183,3 +162,94 @@ class Table:
                 compoundExpressionBranch = "scanColumn%i" % (compoundExpressionBranch)
 
         return compoundExpressionBranch
+
+    def generateRandomQueryCompoundExpressions(self, columns, queryType):
+
+        if queryType == QueryType.small:
+            return [{
+                "name": "0and1",
+                "type": "and",
+                "l": columns[0],
+                "r": columns[1]
+            },
+            {
+                "name": "0and1and2",
+                "type": "and",
+                "l": "0and1",
+                "r": columns[2]
+            }]
+
+        elif queryType == QueryType.medium:
+            return [{
+                "name": "0and1",
+                "type": "and",
+                "l": columns[0],
+                "r": columns[1]
+            },
+            {
+                "name": "2and3",
+                "type": "and",
+                "l": columns[2],
+                "r": columns[3]
+            },
+            {
+                "name": "0and1and4",
+                "type": "and",
+                "l": "0and1",
+                "r": columns[4]
+            },
+            {
+                "name": "0and1and4and2and3",
+                "type": "and",
+                "l": "0and1and4",
+                "r": "2and3"
+            }]
+        else:
+            return [{
+                "name": "0and1",
+                "type": "and",
+                "l": columns[0],
+                "r": columns[1]
+            },
+            {
+                "name": "2and3",
+                "type": "and",
+                "l": columns[2],
+                "r": columns[3]
+            },
+            {
+                "name": "4and5",
+                "type": "and",
+                "l": columns[4],
+                "r": columns[5]
+            },
+            {
+                "name": "6and7",
+                "type": "and",
+                "l": columns[6],
+                "r": columns[7]
+            },
+            {
+                "name": "0and1and8",
+                "type": "and",
+                "l": "0and1",
+                "r": columns[8]
+            },
+            {
+                "name": "2and3and4and5",
+                "type": "and",
+                "l": "2and3",
+                "r": "4and5"
+            },
+            {
+                "name": "0and1and8and6and7",
+                "type": "and",
+                "l": "0and1and8",
+                "r": "6and7"
+            },
+            {
+                "name": "0and1and8and6and7and2and3and4and5",
+                "type": "and",
+                "l": "0and1and8and6and7",
+                "r": "2and3and4and5"
+            }]
