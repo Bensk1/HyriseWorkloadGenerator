@@ -12,8 +12,8 @@ STATISTICAL_FUNCTIONS = {
     'min': np.min,
     'max': np.max,
     'median': np.median,
-    # 'percentile25': lambda x: np.percentile(x, 25),
-    'percentile99': lambda x: np.percentile(x, 99),
+    'percentile25': lambda x: np.percentile(x, 25),
+    'percentile75': lambda x: np.percentile(x, 75),
     'total': lambda x: float(reduce(lambda y, z: y + z, x)) / 1000.0
 }
 
